@@ -1,0 +1,6 @@
+Metadata-Version: 2.4
+Name: simulador-so
+Version: 0.1.0
+Summary: Simulador de escalonamento MLFQ (TP1)
+Author: Equipe TP1
+Requires-Python: >=3.10
