@@ -1,3 +1,5 @@
+# Nomes: Leonardo Simon Monteiro, 
+
 # Sistemas Operacionais — TP1
 ## Simulador de Escalonador de Processos (MLFQ)
 
@@ -14,8 +16,7 @@ Este projeto implementa um **simulador de escalonamento de processos** para um s
 > - **Estados possíveis:** **Pronto**, **Executando**, **Bloqueado**, **Finalizado**.
 
 > **Observação sobre a nomenclatura das filas**
-> O enunciado refere-se à “Fila 3” (terceira fila) para o algoritmo FCFS. Aqui, nomeamos as filas por índice **0, 1 e 2**, sendo **Fila 2** a terceira fila (FCFS), preservando a intenção do texto original.
-
+> O enunciado refere-se à “Fila 3” (terceira fila) para o algoritmo FCFS. Nomeamos as filas por índice **0, 1 e 2**, sendo **Fila 2** a terceira fila (FCFS).
 ---
 
 ## Objetivos
@@ -67,10 +68,10 @@ Este projeto implementa um **simulador de escalonamento de processos** para um s
 ---
 
 ### Checklist Rápido
-- [ ] Respeita quantuns e prioridade entre filas?
-- [ ] Move corretamente entre filas ao estourar quantum?
-- [ ] Trata E/S e retorno ao final da **mesma fila**?
-- [ ] Ordena Fila 0 inicialmente por `priority` (menor = maior prioridade)?
+- [X] Respeita quantuns e prioridade entre filas?
+- [X] Move corretamente entre filas ao estourar quantum?
+- [X] Trata E/S e retorno ao final da **mesma fila**?
+- [X] Ordena Fila 0 inicialmente por `priority` (menor = maior prioridade)?
 - [ ] Exporta métricas úteis (espera, resposta, turn-around, trocas de contexto)?
 - [ ] Saída em **modo texto** clara e reproduzível?
 - [ ] Testes cobrindo cenários típicos e de borda?
