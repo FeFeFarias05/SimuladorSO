@@ -1,11 +1,33 @@
-# Nomes: Leonardo Simon Monteiro, 
+# Nomes: Leonardo Simon Monteiro,
 
 # Sistemas Operacionais — TP1
+
 ## Simulador de Escalonador de Processos (MLFQ)
 
 Este projeto implementa um **simulador de escalonamento de processos** para um sistema operacional hipotético, utilizando um **escalonador multinível com feedback (MLFQ)** composto por **três filas**. A proposta e as regras foram extraídas do enunciado do trabalho prático (TP1) da disciplina de Sistemas Operacionais.
 
+## 🚀 Execução Rápida
+
+Para testar rapidamente o simulador:
+
+```bash
+# 1. Executar testes básicos
+python test_basic.py
+
+# 2. Executar exemplos
+python examples.py
+
+# 3. Testar com arquivo JSON
+python main.py --file test_files/test_processes.json
+
+# 4. Modo interativo
+python main.py --interactive
+```
+
+**📋 [Ver instruções completas de execução](INSTRUCOES.md)**
+
 > **Resumo do MLFQ**
+>
 > - Todos os processos são **admitidos na Fila 0**.
 > - **Fila 0:** Round Robin (quantum **1–10 ms**).
 > - **Fila 1:** Round Robin (quantum **11–20 ms**).
@@ -17,20 +39,24 @@ Este projeto implementa um **simulador de escalonamento de processos** para um s
 
 > **Observação sobre a nomenclatura das filas**
 > O enunciado refere-se à “Fila 3” (terceira fila) para o algoritmo FCFS. Nomeamos as filas por índice **0, 1 e 2**, sendo **Fila 2** a terceira fila (FCFS).
+
 ---
 
 ## Objetivos
+
 - Simular a execução de **qualquer número de processos** admitidos previamente.
 - Respeitar as **regras do MLFQ** quanto a quantuns, queda de fila e prioridade de atendimento.
 - Reproduzir o comportamento de **E/S** e estados de processo.
 - Exibir a **saída em modo texto** no terminal, de forma clara e auditável.
 
 ## Parâmetros do Escalonador
+
 - **Quantum Fila 0:** inteiro entre **1 e 10 ms**.
 - **Quantum Fila 1:** inteiro entre **11 e 20 ms**.
 - **Fila 2:** FCFS (sem quantum).
 
 ## Parâmetros de Cada Processo
+
 - `name` — Nome do processo.
 - `cpu_burst` — Tempo de **surto de CPU** antes de uma E/S (ms).
 - `io_time` — Tempo **bloqueado** devido à E/S (ms).
@@ -38,6 +64,7 @@ Este projeto implementa um **simulador de escalonamento de processos** para um s
 - `priority` — Inteiro em que **menor valor = maior prioridade** (usado **apenas** para ordenar **inicialmente** os processos **na Fila 0**).
 
 ### Regras Operacionais
+
 1. **Admissão:** todos os processos entram na **Fila 0**, ordenados por `priority` (menor primeiro).
 2. **Despacho por fila:** sempre escolher a **fila mais alta** que não esteja vazia (0 → 1 → 2).
 3. **Round Robin (Fila 0 e 1):** executar por no máximo `quantum` ou até:
@@ -49,6 +76,7 @@ Este projeto implementa um **simulador de escalonamento de processos** para um s
    - **Finalizar** (`total_cpu_time` zerado).
 
 ## Boas Práticas e Critérios de Qualidade
+
 - **Programação modular** e separação clara de responsabilidades.
 - **Determinismo** do simulador (mesmo input → mesma saída).
 - **Testes automatizados** (unitários e de integração).
@@ -57,6 +85,7 @@ Este projeto implementa um **simulador de escalonamento de processos** para um s
 - **Validação de entrada** (intervalos de quantum, valores ≥ 0, etc.).
 
 ## Entrega e Apresentação
+
 - **Entrega via Moodle** em arquivo **`.tar.gz` ou `.zip`** contendo:
 - **código-fonte** e instruções de execução;
 - **arquivo texto** com **nomes completos** dos integrantes.
@@ -68,10 +97,11 @@ Este projeto implementa um **simulador de escalonamento de processos** para um s
 ---
 
 ### Checklist Rápido
-- [X] Respeita quantuns e prioridade entre filas?
-- [X] Move corretamente entre filas ao estourar quantum?
-- [X] Trata E/S e retorno ao final da **mesma fila**?
-- [X] Ordena Fila 0 inicialmente por `priority` (menor = maior prioridade)?
+
+- [x] Respeita quantuns e prioridade entre filas?
+- [x] Move corretamente entre filas ao estourar quantum?
+- [x] Trata E/S e retorno ao final da **mesma fila**?
+- [x] Ordena Fila 0 inicialmente por `priority` (menor = maior prioridade)?
 - [ ] Exporta métricas úteis (espera, resposta, turn-around, trocas de contexto)?
 - [ ] Saída em **modo texto** clara e reproduzível?
 - [ ] Testes cobrindo cenários típicos e de borda?

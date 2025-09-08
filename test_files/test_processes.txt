@@ -1,0 +1,7 @@
+# Arquivo de teste para o simulador MLFQ
+# Formato: nome cpu_burst io_time total_cpu_time priority
+P1 7 4 21 1
+P2 10 2 15 2
+P3 5 6 20 3
+P4 13 0 26 1
+P5 8 3 24 2
