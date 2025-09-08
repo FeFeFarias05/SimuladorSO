@@ -2,22 +2,14 @@ from process import Processo
 
 class Escalonador:
     def __init__(self, processos):
-        self.blocked = []
-        self.exit = []
+        self.bloqueados = []
+        self.terminados = []
         self.tempo = 0
         self.intervalo = 1  # 1 ms
         self.processos = processos
-        self.processos.sort(key=lambda x: x.credito, reverse=True)
+        self.processos.sort(key=lambda x: x.credito, reverse=True) # ordena por crédito inicialmente
 
     def escalona(self):
-        """
-        Seleciona o primeiro processo da lista de processos e muda o seu status para running
-        Computa um acréscimo no seu tempo_total de cpu
-        Continua até zerar o CPU_burst ou caso apareça um processo com prioridade maior
-        se tiver uma prioridade igual, calcula o crédito, redistribui a ordem e reordena / 
-        calcula o crédito e usa ele apenas para escolher qual processo vai para running
-        Quando zerar o CPU_burst o processo tem seu status alterado para exit e vai para a lista de saída
-        """
         processo = next((processo for processo in self.processos 
                         if (processo.status == 'ready' or processo.status == 'running') 
                         and processo.credito > 0), None)
