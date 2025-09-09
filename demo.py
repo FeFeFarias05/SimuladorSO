@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""
-Script de demonstração do Simulador MLFQ
-
-Este script demonstra diferentes cenários de uso do simulador
-e pode ser executado para testar rapidamente o funcionamento.
-"""
+"Script de demonstração do Simulador MLFQ"
 
 import subprocess
 import sys
@@ -62,10 +57,6 @@ def main():
         {
             "cmd": ["python", "-m", "src.simulador_so.cli", "--input", "examples/complex_example.json"],
             "desc": "Exemplo Complexo - 4 processos com diferentes características"
-        },
-        {
-            "cmd": ["python", "-m", "src.simulador_so.cli", "--help"],
-            "desc": "Ajuda do Simulador"
         }
     ]
     
@@ -77,23 +68,8 @@ def main():
         if i < len(demos):
             input("\n⏸️  Pressione Enter para continuar...")
     
-    # Executar testes
-    print(f"\n{'='*60}")
-    print("🧪 EXECUTANDO TESTES AUTOMATIZADOS")
-    print(f"{'='*60}")
-    run_command(["python", "-m", "pytest", "tests/", "-v"], "Testes Unitários")
-    
     print(f"\n{'='*60}")
     print("✅ DEMONSTRAÇÃO CONCLUÍDA!")
-    print(f"{'='*60}")
-    print("📚 Para mais informações, consulte:")
-    print("   - README.md: Documentação completa")
-    print("   - tests/: Testes automatizados")
-    print("\n🎯 Comandos úteis:")
-    print("   python -m src.simulador_so.cli --help")
-    print("   python -m pytest tests/ -v")
-    print("   python -m src.simulador_so.cli --input examples/input_example.json --verbose")
-
 
 if __name__ == "__main__":
     main()
