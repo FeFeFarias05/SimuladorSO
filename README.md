@@ -26,7 +26,6 @@ Este simulador implementa um escalonador multinível com feedback (MLFQ) compost
 - ✅ **Feedback automático** entre filas
 - ✅ **Métricas de performance** (tempo de espera, resposta, turnaround)
 - ✅ **Interface CLI** com opções verbosas
-- ✅ **Validação robusta** de entrada
 - ✅ **Testes automatizados**
 
 ## 🚀 Instalação
@@ -176,6 +175,5 @@ export MLFQ_MAX_TICKS=5000
 # Habilitar debug
 export MLFQ_DEBUG=1
 ```
-
 
 **Desenvolvido para o TP1 de Sistemas Operacionais**
