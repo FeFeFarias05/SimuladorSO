@@ -56,9 +56,10 @@ def main() -> None:
         for e in result.timeline:
             print(e)
     print("metrics:")
+    print(f"{'Processo':<10} {'Espera':>7} {'Resposta':>9} {'Turnaround':>11}")
     for name, m in result.metrics.items():
-        print(name, m)
-
+        print(f"{name:<10} {m['waiting_time']:>7} {m['response_time']:>9} {m['turnaround_time']:>11}")
+    print(f"Trocas de contexto: {result.context_switches}")
 
 if __name__ == "__main__":
     main()

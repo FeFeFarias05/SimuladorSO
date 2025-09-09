@@ -26,6 +26,8 @@ class SimulationEngine:
         self.scheduler = MLFQScheduler(sim_input.config)
         self.time_ms: int = 0
         self.timeline: List[Dict[str, str]] = []
+        self.context_switches = 0
+        self.last_running = None
 
         # criar runtimes e admitir na fila 0 (ordenados por prioridade)
         ordered_specs = sorted(sim_input.processes, key=lambda p: p.priority)
@@ -67,6 +69,11 @@ class SimulationEngine:
                 self.timeline.append({"t": str(self.time_ms), "event": "IDLE"})
                 self.time_ms += 1
                 continue
+
+            # Contabiliza troca de contexto
+            if self.last_running != current:
+                self.context_switches += 1
+                self.last_running = current
 
             # executar um timeslice
             quantum = self.scheduler.quantum_for(current)
@@ -123,6 +130,7 @@ class SimulationEngine:
             completed=self._all_finished(),
             timeline=self.timeline,
             metrics=metrics,
+            context_switches=self.context_switches,
         )
 
 

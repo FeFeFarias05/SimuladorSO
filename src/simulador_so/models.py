@@ -75,5 +75,6 @@ class SimulationResult:
     completed: bool
     timeline: List[Dict[str, str]] = field(default_factory=list)
     metrics: Dict[str, Dict[str, int]] = field(default_factory=dict)
+    context_switches: int = 0
 
 
