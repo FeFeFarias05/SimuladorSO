@@ -6,6 +6,7 @@ from typing import List, Optional, Dict
 
 
 class ProcessState(Enum):
+    """Estados possíveis de um processo durante a simulação."""
     READY = auto()
     RUNNING = auto()
     BLOCKED = auto()
@@ -21,22 +22,36 @@ class ProcessSpec:
     priority: int
 
     def validate(self) -> None:
-        if not self.name:
-            raise ValueError("name vazio")
-        if self.cpu_burst < 0 or self.io_time < 0 or self.total_cpu_time < 0:
-            raise ValueError("valores devem ser >= 0")
+        """Valida os dados do processo."""
+        if not self.name or not self.name.strip():
+            raise ValueError("Nome do processo não pode estar vazio")
+        
+        if self.cpu_burst < 0:
+            raise ValueError(f"cpu_burst deve ser >= 0, recebido: {self.cpu_burst}")
+        if self.io_time < 0:
+            raise ValueError(f"io_time deve ser >= 0, recebido: {self.io_time}")
+        if self.total_cpu_time < 0:
+            raise ValueError(f"total_cpu_time deve ser >= 0, recebido: {self.total_cpu_time}")
+        
+        if self.cpu_burst == 0 and self.total_cpu_time > 0:
+            raise ValueError("Processo com cpu_burst=0 mas total_cpu_time>0 é inválido")
 
 
 @dataclass
 class SchedulerConfig:
+    """
+        quantum_q0: Quantum da fila 0 (1-10 ms)
+        quantum_q1: Quantum da fila 1 (11-20 ms)
+    """
     quantum_q0: int
     quantum_q1: int
 
     def validate(self) -> None:
+        """Valida os parâmetros do escalonador."""
         if not (1 <= self.quantum_q0 <= 10):
-            raise ValueError("quantum_q0 deve estar entre 1 e 10 ms")
+            raise ValueError(f"quantum_q0 deve estar entre 1 e 10 ms, recebido: {self.quantum_q0}")
         if not (11 <= self.quantum_q1 <= 20):
-            raise ValueError("quantum_q1 deve estar entre 11 e 20 ms")
+            raise ValueError(f"quantum_q1 deve estar entre 11 e 20 ms, recebido: {self.quantum_q1}")
 
 
 @dataclass
@@ -46,17 +61,12 @@ class ProcessRuntime:
     remaining_burst_time: int
     state: ProcessState = ProcessState.READY
     current_queue: int = 0
-    time_in_current_quantum: int = 0
     remaining_io_time: int = 0
 
-    # métricas
+    # Métricas de performance
     first_response_time: Optional[int] = None
     waiting_time: int = 0
     turnaround_time: Optional[int] = None
-
-    def on_tick_wait(self) -> None:
-        if self.state == ProcessState.READY:
-            self.waiting_time += 1
 
 
 @dataclass
@@ -65,6 +75,15 @@ class SimulationInput:
     processes: List[ProcessSpec]
 
     def validate(self) -> None:
+        """Valida a entrada da simulação."""
+        if not self.processes:
+            raise ValueError("Lista de processos não pode estar vazia")
+        
+        # Verificar nomes únicos
+        names = [p.name for p in self.processes]
+        if len(names) != len(set(names)):
+            raise ValueError("Nomes de processos devem ser únicos")
+        
         self.config.validate()
         for p in self.processes:
             p.validate()

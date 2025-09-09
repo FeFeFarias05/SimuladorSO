@@ -5,61 +5,72 @@ from typing import Deque, Dict, Optional
 
 from ..models import (
     ProcessRuntime,
-    ProcessState,
     SchedulerConfig,
 )
-
 
 class MLFQScheduler:
     """Esqueletro do Escalonador Multinível com Feedback (MLFQ).
 
-    Filas:
-      - 0: Round Robin (quantum_q0)
-      - 1: Round Robin (quantum_q1)
-      - 2: FCFS
+    Implementa três filas de prioridade:
+    - Fila 0: Round Robin com quantum_q0 (maior prioridade)
+    - Fila 1: Round Robin com quantum_q1 (prioridade média)  
+    - Fila 2: FCFS (menor prioridade)
+
+    Processos começam na fila 0 e são rebaixados após esgotar o quantum.
     """
+
+    HIGH_PRIORITY_QUEUE = 0
+    MEDIUM_PRIORITY_QUEUE = 1
+    LOW_PRIORITY_QUEUE = 2
 
     def __init__(self, config: SchedulerConfig):
         self.config = config
         self.queues: Dict[int, Deque[ProcessRuntime]] = {
-            0: deque(),
-            1: deque(),
-            2: deque(),
+            self.HIGH_PRIORITY_QUEUE: deque(),
+            self.MEDIUM_PRIORITY_QUEUE: deque(),
+            self.LOW_PRIORITY_QUEUE: deque(),
         }
 
     def admit(self, proc: ProcessRuntime) -> None:
-        proc.current_queue = 0
-        self.queues[0].append(proc)
+        "Admite um processo na fila de maior prioridade."
 
-    def has_ready(self) -> bool:
-        return any(len(q) > 0 for q in self.queues.values())
+        proc.current_queue = self.HIGH_PRIORITY_QUEUE
+        self.queues[self.HIGH_PRIORITY_QUEUE].append(proc)
 
     def pick_next(self) -> Optional[ProcessRuntime]:
-        for level in (0, 1, 2):
-            if self.queues[level]:
-                proc = self.queues[level].popleft()
-                return proc
+        "Seleciona o próximo processo para execução."
+        # Verifica filas em ordem de prioridade (0 > 1 > 2)
+        for queue_level in (self.HIGH_PRIORITY_QUEUE, self.MEDIUM_PRIORITY_QUEUE, self.LOW_PRIORITY_QUEUE):
+            if self.queues[queue_level]:
+                return self.queues[queue_level].popleft()
         return None
 
     def requeue_after_timeslice(self, proc: ProcessRuntime) -> None:
-        if proc.current_queue == 0:
-            proc.current_queue = 1
-            self.queues[1].append(proc)
-        elif proc.current_queue == 1:
-            proc.current_queue = 2
-            self.queues[2].append(proc)
+        "Reenfileira processo após esgotar o quantum (rebaixamento)."
+        if proc.current_queue == self.HIGH_PRIORITY_QUEUE:
+            # Rebaixa da fila 0 para fila 1
+            proc.current_queue = self.MEDIUM_PRIORITY_QUEUE
+            self.queues[self.MEDIUM_PRIORITY_QUEUE].append(proc)
+        elif proc.current_queue == self.MEDIUM_PRIORITY_QUEUE:
+            # Rebaixa da fila 1 para fila 2
+            proc.current_queue = self.LOW_PRIORITY_QUEUE
+            self.queues[self.LOW_PRIORITY_QUEUE].append(proc)
         else:
-            # FCFS: volta ao fim da fila 2
-            self.queues[2].append(proc)
+            # FCFS: volta ao fim da fila 2 (não há rebaixamento)
+            self.queues[self.LOW_PRIORITY_QUEUE].append(proc)
 
     def requeue_same_level(self, proc: ProcessRuntime) -> None:
+        "Reenfileira processo na mesma fila (após E/S)."
         self.queues[proc.current_queue].append(proc)
 
     def quantum_for(self, proc: ProcessRuntime) -> Optional[int]:
-        if proc.current_queue == 0:
+        "Retorna o quantum para o processo baseado na fila atual."
+
+        if proc.current_queue == self.HIGH_PRIORITY_QUEUE:
             return self.config.quantum_q0
-        if proc.current_queue == 1:
+        elif proc.current_queue == self.MEDIUM_PRIORITY_QUEUE:
             return self.config.quantum_q1
-        return None  # FCFS
+        else:
+            return None  # FCFS na fila 2
 
 

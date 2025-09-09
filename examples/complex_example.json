@@ -1,0 +1,36 @@
+{
+  "config": {
+    "quantum_q0": 3,
+    "quantum_q1": 12
+  },
+  "processes": [
+    {
+      "name": "CPU_Intensive",
+      "cpu_burst": 10,
+      "io_time": 2,
+      "total_cpu_time": 20,
+      "priority": 0
+    },
+    {
+      "name": "IO_Intensive",
+      "cpu_burst": 2,
+      "io_time": 5,
+      "total_cpu_time": 8,
+      "priority": 1
+    },
+    {
+      "name": "Short_Task",
+      "cpu_burst": 1,
+      "io_time": 0,
+      "total_cpu_time": 3,
+      "priority": 2
+    },
+    {
+      "name": "Long_Task",
+      "cpu_burst": 15,
+      "io_time": 3,
+      "total_cpu_time": 30,
+      "priority": 3
+    }
+  ]
+}

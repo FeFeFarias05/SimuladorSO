@@ -1,81 +1,181 @@
-# Nomes: Leonardo Simon Monteiro, 
+# Simulador de Escalonamento MLFQ
 
-# Sistemas Operacionais — TP1
-## Simulador de Escalonador de Processos (MLFQ)
+Um simulador de escalonamento de processos implementando o algoritmo **Multilevel Feedback Queue (MLFQ)** para sistemas operacionais.
 
-Este projeto implementa um **simulador de escalonamento de processos** para um sistema operacional hipotético, utilizando um **escalonador multinível com feedback (MLFQ)** composto por **três filas**. A proposta e as regras foram extraídas do enunciado do trabalho prático (TP1) da disciplina de Sistemas Operacionais.
+## 📋 Índice
 
-> **Resumo do MLFQ**
-> - Todos os processos são **admitidos na Fila 0**.
-> - **Fila 0:** Round Robin (quantum **1–10 ms**).
-> - **Fila 1:** Round Robin (quantum **11–20 ms**).
-> - **Fila 2 (terceira fila):** **FCFS** (sem preempção; executa o processo até o fim).
-> - **Prioridade entre filas:** a Fila 0 sempre é atendida antes da Fila 1; a Fila 2 só executa quando as duas anteriores estão vazias.
-> - **Feedback:** se o processo **não concluir** na Fila 0, **desce** para a Fila 1; se **não concluir** na Fila 1, **desce** para a Fila 2.
-> - **E/S (I/O):** ao solicitar E/S, o processo sai de execução, fica **Bloqueado** pelo tempo de E/S e retorna ao **fim da mesma fila** em que estava.
-> - **Estados possíveis:** **Pronto**, **Executando**, **Bloqueado**, **Finalizado**.
+- [Visão Geral](#-visão-geral)
+- [Instalação](#-instalação)
+- [Uso](#-uso)
+- [Formato de Entrada](#-formato-de-entrada)
+- [Arquitetura](#-arquitetura)
+- [Desenvolvimento](#-desenvolvimento)
 
-> **Observação sobre a nomenclatura das filas**
-> O enunciado refere-se à “Fila 3” (terceira fila) para o algoritmo FCFS. Nomeamos as filas por índice **0, 1 e 2**, sendo **Fila 2** a terceira fila (FCFS).
----
+## 🎯 Visão Geral
 
-## Objetivos
-- Simular a execução de **qualquer número de processos** admitidos previamente.
-- Respeitar as **regras do MLFQ** quanto a quantuns, queda de fila e prioridade de atendimento.
-- Reproduzir o comportamento de **E/S** e estados de processo.
-- Exibir a **saída em modo texto** no terminal, de forma clara e auditável.
+Este simulador implementa um escalonador multinível com feedback (MLFQ) composto por **três filas de prioridade**:
 
-## Parâmetros do Escalonador
-- **Quantum Fila 0:** inteiro entre **1 e 10 ms**.
-- **Quantum Fila 1:** inteiro entre **11 e 20 ms**.
-- **Fila 2:** FCFS (sem quantum).
+- **Fila 0**: Round Robin com quantum configurável (1-10ms) - **Maior prioridade**
+- **Fila 1**: Round Robin com quantum configurável (11-20ms) - **Prioridade média**
+- **Fila 2**: FCFS (First-Come, First-Served) - **Menor prioridade**
 
-## Parâmetros de Cada Processo
-- `name` — Nome do processo.
-- `cpu_burst` — Tempo de **surto de CPU** antes de uma E/S (ms).
-- `io_time` — Tempo **bloqueado** devido à E/S (ms).
-- `total_cpu_time` — Tempo total de CPU necessário (ms). Pode envolver múltiplos ciclos `CPU → E/S → CPU`.
-- `priority` — Inteiro em que **menor valor = maior prioridade** (usado **apenas** para ordenar **inicialmente** os processos **na Fila 0**).
+### Características Principais
 
-### Regras Operacionais
-1. **Admissão:** todos os processos entram na **Fila 0**, ordenados por `priority` (menor primeiro).
-2. **Despacho por fila:** sempre escolher a **fila mais alta** que não esteja vazia (0 → 1 → 2).
-3. **Round Robin (Fila 0 e 1):** executar por no máximo `quantum` ou até:
-   - o processo **consumir o burst** (`cpu_burst`) → faz **E/S** por `io_time` e retorna ao **fim da fila atual**;
-   - o processo **consumir `total_cpu_time`** → **Finalizado**;
-   - ao **estourar o quantum** sem finalizar → **descer** para a próxima fila.
-4. **FCFS (Fila 2):** executar o processo até:
-   - **E/S** (volta ao **fim da Fila 2** após `io_time`); ou
-   - **Finalizar** (`total_cpu_time` zerado).
+- ✅ **Simulação determinística** por ticks de 1ms
+- ✅ **Gerenciamento de E/S** com estados bloqueado/desbloqueado
+- ✅ **Feedback automático** entre filas
+- ✅ **Métricas de performance** (tempo de espera, resposta, turnaround)
+- ✅ **Interface CLI** com opções verbosas
+- ✅ **Validação robusta** de entrada
+- ✅ **Testes automatizados**
 
-## Boas Práticas e Critérios de Qualidade
-- **Programação modular** e separação clara de responsabilidades.
-- **Determinismo** do simulador (mesmo input → mesma saída).
-- **Testes automatizados** (unitários e de integração).
-- **Logs claros** e opção de **verbose**.
-- **Documentação** de parâmetros e decisões de projeto.
-- **Validação de entrada** (intervalos de quantum, valores ≥ 0, etc.).
+## 🚀 Instalação
 
-## Entrega e Apresentação
-- **Entrega via Moodle** em arquivo **`.tar.gz` ou `.zip`** contendo:
-- **código-fonte** e instruções de execução;
-- **arquivo texto** com **nomes completos** dos integrantes.
-- **Apenas um integrante** deve submeter.
-- **Grupos de 3 ou 5 integrantes**.
-- **Data de entrega:** **11/09**.
-- **Apresentações:** **11/09** e **16/09** (ordem por sorteio na primeira data).
+### Pré-requisitos
 
----
+- Python 3.10 ou superior
+- pip (gerenciador de pacotes Python)
 
-### Checklist Rápido
-- [X] Respeita quantuns e prioridade entre filas?
-- [X] Move corretamente entre filas ao estourar quantum?
-- [X] Trata E/S e retorno ao final da **mesma fila**?
-- [X] Ordena Fila 0 inicialmente por `priority` (menor = maior prioridade)?
-- [ ] Exporta métricas úteis (espera, resposta, turn-around, trocas de contexto)?
-- [ ] Saída em **modo texto** clara e reproduzível?
-- [ ] Testes cobrindo cenários típicos e de borda?
+### Instalação Local
 
----
+```bash
+# Clone o repositório
+git clone <url-do-repositorio>
+cd SimuladorSO
 
-**Referência:** Enunciado do TP1 de Sistemas Operacionais (resumo incluído neste README).
+# Instale em modo de desenvolvimento
+pip install -e .
+
+# Ou execute diretamente
+python -m src.simulador_so.cli --help
+```
+
+## 💻 Uso
+
+### Comando Básico
+
+```bash
+python -m src.simulador_so.cli --input <arquivo.json>
+```
+
+**Opções:**
+- `--input`: Arquivo JSON com configuração e processos (obrigatório)
+- `--verbose`: Exibe timeline completa da simulação
+
+### Exemplo de Execução
+
+```bash
+# Execução básica
+python -m src.simulador_so.cli --input examples/input_example.json
+
+# Execução com timeline detalhada
+python -m src.simulador_so.cli --input examples/input_example.json --verbose
+```
+
+## 📄 Formato de Entrada
+
+O simulador aceita arquivos JSON com a seguinte estrutura:
+
+```json
+{
+  "config": {
+    "quantum_q0": 5,
+    "quantum_q1": 15
+  },
+  "processes": [
+    {
+      "name": "P1",
+      "cpu_burst": 4,
+      "io_time": 8,
+      "total_cpu_time": 12,
+      "priority": 0
+    }
+  ]
+}
+```
+
+## 🏗️ Arquitetura
+
+### Estrutura do Projeto
+
+```
+SimuladorSO/
+├── src/simulador_so/
+│   ├── __init__.py          # Pacote principal
+│   ├── cli.py              # Interface de linha de comando
+│   ├── engine.py           # Engine de simulação
+│   ├── models.py           # Modelos de dados
+│   └── scheduler/
+│       └── mlfq.py         # Implementação do MLFQ
+├── tests/                  # Testes automatizados
+├── examples/               # Exemplos de entrada
+├── pyproject.toml         # Configuração do projeto
+└── README.md              # Este arquivo
+```
+
+### Componentes Principais
+
+- **`CLI`**: Interface de linha de comando com validação robusta
+- **`SimulationEngine`**: Motor de simulação discreta por ticks
+- **`MLFQScheduler`**: Implementação do algoritmo MLFQ
+- **`Models`**: Estruturas de dados e validações
+
+### Algoritmo MLFQ
+
+1. **Admissão**: Todos os processos começam na Fila 0
+2. **Prioridade**: Fila 0 > Fila 1 > Fila 2
+3. **Round Robin**: Filas 0 e 1 usam quantum configurável
+4. **FCFS**: Fila 2 executa até completar ou E/S
+5. **Feedback**: Processos descem de fila ao esgotar quantum
+6. **E/S**: Processos bloqueados retornam ao fim da mesma fila
+
+## 🧪 Desenvolvimento
+
+### Executar Testes
+
+```bash
+# Executar todos os testes
+python -m pytest tests/ -v
+
+# Executar com cobertura
+python -m pytest tests/ --cov=src/simulador_so
+```
+
+### Estrutura de Testes
+
+- `test_smoke.py`: Teste básico de funcionamento
+- `test_io_and_multiple_bursts.py`: Teste com E/S e múltiplos bursts
+
+### Validação de Código
+
+```bash
+# Verificar linting
+python -m flake8 src/
+
+# Verificar tipos
+python -m mypy src/
+```
+
+## 📈 Métricas de Performance
+
+O simulador calcula as seguintes métricas:
+
+- **Tempo de Espera**: Tempo total na fila de prontos
+- **Tempo de Resposta**: Tempo até primeira execução
+- **Tempo de Turnaround**: Tempo total de execução
+- **Trocas de Contexto**: Número de mudanças de processo
+
+## 🔧 Configuração Avançada
+
+### Variáveis de Ambiente
+
+```bash
+# Definir timeout máximo (padrão: 10000 ticks)
+export MLFQ_MAX_TICKS=5000
+
+# Habilitar debug
+export MLFQ_DEBUG=1
+```
+
+
+**Desenvolvido para o TP1 de Sistemas Operacionais**
