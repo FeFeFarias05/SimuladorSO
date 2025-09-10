@@ -1,22 +1,29 @@
 {
   "config": {
-    "quantum_q0": 5,
-    "quantum_q1": 15
+    "quantum_q0": 3,
+    "quantum_q1": 8
   },
   "processes": [
     {
       "name": "P1",
-      "cpu_burst": 4,
-      "io_time": 8,
-      "total_cpu_time": 12,
+      "cpu_burst": 2,
+      "io_time": 4,
+      "total_cpu_time": 10,
       "priority": 0
     },
     {
       "name": "P2",
-      "cpu_burst": 6,
-      "io_time": 5,
-      "total_cpu_time": 10,
-      "priority": 1
+      "cpu_burst": 0,
+      "io_time": 0,
+      "total_cpu_time": 12,
+      "priority": 0
+    },
+    {
+      "name": "P3",
+      "cpu_burst": 3,
+      "io_time": 2,
+      "total_cpu_time": 8,
+      "priority": 0
     }
   ]
 }
