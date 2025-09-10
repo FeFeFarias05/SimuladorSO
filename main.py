@@ -70,7 +70,7 @@ def exemplo_quantum_pequeno():
     for p in processos:
         print(f"  {p.nome}: Total CPU={p.tempo_total_cpu}ms (sem I/O)")
     
-    escalonador = EscalonadorMultinivel(processos, quantum_fila0=2, quantum_fila1=4)
+    escalonador = EscalonadorMultinivel(processos, quantum_fila0=2, quantum_fila1=11)
     escalonador.executar_simulacao()
     escalonador.gerar_relatorio()
 
@@ -88,7 +88,7 @@ def exemplo_preempcao():
     print("  Low: Processo longo que será movido para fila 3")
     print("  High: Processo com I/O que voltará para fila 0 e preemptará Low")
     
-    escalonador = EscalonadorMultinivel(processos, quantum_fila0=3, quantum_fila1=6)
+    escalonador = EscalonadorMultinivel(processos, quantum_fila0=3, quantum_fila1=12)
     escalonador.executar_simulacao()
     escalonador.gerar_relatorio()
 
