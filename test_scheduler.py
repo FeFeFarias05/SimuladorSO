@@ -66,7 +66,7 @@ def teste_casos_extremos():
         Processo('P3', 2, 3, 12, 3, 0),
     ]
     
-    escalonador = EscalonadorMultinivel(processos, quantum_fila0=1, quantum_fila1=10)
+    escalonador = EscalonadorMultinivel(processos, quantum_fila0=1, quantum_fila1=12)
     escalonador.executar_simulacao()
     escalonador.gerar_relatorio()
 
