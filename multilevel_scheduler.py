@@ -3,9 +3,16 @@ from collections import deque
 
 class EscalonadorMultinivel:
     def __init__(self, processos, quantum_fila0=5, quantum_fila1=15):
+        
+        # Validação dos quantums conforme especificação
+        if not (1 <= quantum_fila0 <= 10):
+            raise ValueError(f"Quantum da Fila 0 deve estar entre 1-10ms. Valor fornecido: {quantum_fila0}ms")
+        if not (11 <= quantum_fila1 <= 20):
+            raise ValueError(f"Quantum da Fila 1 deve estar entre 11-20ms. Valor fornecido: {quantum_fila1}ms")
+            
         # Configuração dos quantums
-        self.quantum_fila0 = quantum_fila0  # 1-10ms (padrão: 5ms)
-        self.quantum_fila1 = quantum_fila1  # 11-20ms (padrão: 15ms)
+        self.quantum_fila0 = quantum_fila0  # 1-10ms
+        self.quantum_fila1 = quantum_fila1  # 11-20ms
         
         # As três filas do escalonador multinível
         self.fila0 = deque()  # Round Robin com quantum pequeno
@@ -21,8 +28,9 @@ class EscalonadorMultinivel:
         self.processo_executando = None
         self.quantum_restante = 0
         
-        # Inicializa todos os processos na fila 0
-        for processo in processos:
+        # Inicializa todos os processos na fila 0, ordenados por prioridade
+        processos_ordenados = sorted(processos, key=lambda p: p.prioridade)
+        for processo in processos_ordenados:
             processo.fila_atual = 0
             processo.status = 'ready'
             self.fila0.append(processo)
@@ -49,7 +57,7 @@ class EscalonadorMultinivel:
             processo = self.fila1.popleft()
             processo.quantum_restante = self.quantum_fila1
             return processo
-            
+
         # Prioridade 3: Fila 2 (FCFS - sem quantum)
         if self.fila2:
             processo = self.fila2.popleft()
@@ -65,27 +73,32 @@ class EscalonadorMultinivel:
             self.fila1.append(processo)
             self.log_execucao.append(f"T{self.tempo_atual}: Processo {processo.nome} movido para Fila 1 (quantum expirado)")
         elif processo.fila_atual == 1:
-            processo.fila_atual = 2  
+            processo.fila_atual = 3  
             self.fila2.append(processo)
-            self.log_execucao.append(f"T{self.tempo_atual}: Processo {processo.nome} movido para Fila 2 (quantum expirado)")
-        # Fila 2 é FCFS, não move para lugar algum
+            self.log_execucao.append(f"T{self.tempo_atual}: Processo {processo.nome} movido para Fila 3 (quantum expirado)")
+        # Fila 3 é FCFS, não move para lugar algum
 
-    def retornar_processo_fila0(self, processo):
-        """Retorna processo para fila 0 quando volta do I/O"""
-        processo.fila_atual = 0
+    def retornar_processo_fila_original(self, processo):
+        """Retorna processo para a fila onde estava quando foi bloqueado"""
         processo.status = 'ready'
-        self.fila0.append(processo)
-        self.log_execucao.append(f"T{self.tempo_atual}: Processo {processo.nome} retornou do I/O para Fila 0")
+        
+        if processo.fila_atual == 0:
+            self.fila0.append(processo)
+        elif processo.fila_atual == 1:
+            self.fila1.append(processo)  
+        elif processo.fila_atual == 2:
+            self.fila2.append(processo)
+        self.log_execucao.append(f"T{self.tempo_atual}: Processo {processo.nome} retornou do I/O para Fila {processo.fila_atual}")
 
     def processar_bloqueados(self):
         """Processa processos bloqueados por I/O"""
         for processo in self.bloqueados[:]:
             processo.tempo_io_restante -= 1
             if processo.tempo_io_restante <= 0:
-                # Processo terminou I/O, volta para fila 0
+                # Processo terminou I/O, volta para a fila onde estava
                 processo.resetar_cpu_burst()
                 self.bloqueados.remove(processo)
-                self.retornar_processo_fila0(processo)
+                self.retornar_processo_fila_original(processo)
 
     def executar_processo(self, processo):
         """Executa um processo por 1ms"""
@@ -140,8 +153,8 @@ class EscalonadorMultinivel:
         if self.fila0 and processo_atual.fila_atual != 0:
             return True
             
-        # Se há processos na fila 1 e processo atual é da fila 2
-        if self.fila1 and processo_atual.fila_atual == 2:
+        # Se há processos na fila 1 e processo atual é da fila 3
+        if self.fila1 and processo_atual.fila_atual == 3:
             return True
             
         return False
@@ -151,10 +164,10 @@ class EscalonadorMultinivel:
         print("=== INICIANDO SIMULAÇÃO DO ESCALONADOR MULTINÍVEL COM FEEDBACK ===")
         print(f"Quantum Fila 0: {self.quantum_fila0}ms")
         print(f"Quantum Fila 1: {self.quantum_fila1}ms")
-        print(f"Fila 2: FCFS (sem quantum)")
+        print(f"Fila 3: FCFS (sem quantum)")
         print("=" * 60)
-        
-        while (self.fila0 or self.fila1 or self.fila2 or 
+
+        while (self.fila0 or self.fila1 or self.fila2 or
                self.bloqueados or self.processo_executando):
             
             # Processa processos bloqueados por I/O
@@ -170,7 +183,7 @@ class EscalonadorMultinivel:
                         self.fila1.appendleft(self.processo_executando)
                     else:
                         self.fila2.appendleft(self.processo_executando)
-                    
+
                     self.processo_executando.status = 'ready'
                     self.log_execucao.append(f"T{self.tempo_atual}: Processo {self.processo_executando.nome} PREEMPTADO")
                 

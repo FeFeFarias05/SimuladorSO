@@ -1,7 +1,7 @@
 {
   "config": {
-    "quantum_q0": 3,
-    "quantum_q1": 8
+    "quantum_q0": 5,
+    "quantum_q1": 15
   },
   "processes": [
     {

@@ -1,16 +1,3 @@
-#!/usr/bin/env python3
-"""
-Simulador de Escalonador Multinível com Feedback
-Trabalho de Sistemas Operacionais
-
-Implementa um escalonador com 3 filas:
-- Fila 0: Round Robin (quantum 1-10ms)
-- Fila 1: Round Robin (quantum 11-20ms) 
-- Fila 2: FCFS
-
-Autor: Sistema de Simulação de SO
-Data: 2025
-"""
 
 from process import Processo
 from multilevel_scheduler import EscalonadorMultinivel
@@ -56,7 +43,7 @@ def exemplo_basico():
     # Cria processos que demonstram bem o algoritmo
     processos = [
         Processo('A', 2, 3, 8),   # Processo com I/O
-        Processo('B', 0, 0, 15),  # Processo CPU-intensivo (vai para fila 2)
+        Processo('B', 0, 0, 15),  # Processo CPU-intensivo (vai para fila 3)
         Processo('C', 1, 2, 6),   # Processo balanceado
         Processo('D', 0, 0, 4),   # Processo curto
     ]
@@ -96,12 +83,12 @@ def exemplo_preempcao():
     print("=" * 60)
     
     processos = [
-        Processo('Low', 0, 0, 20),  # Processo que vai para fila 2
+        Processo('Low', 0, 0, 20),  # Processo que vai para fila 3
         Processo('High', 2, 5, 6),  # Processo que vai fazer I/O e retornar para fila 0
     ]
     
     print("PROCESSOS:")
-    print("  Low: Processo longo que será movido para fila 2")
+    print("  Low: Processo longo que será movido para fila 3")
     print("  High: Processo com I/O que voltará para fila 0 e preemptará Low")
     
     escalonador = EscalonadorMultinivel(processos, quantum_fila0=3, quantum_fila1=6)
@@ -116,11 +103,11 @@ def main():
     print("ESPECIFICAÇÕES:")
     print("• Fila 0: Round Robin (quantum 1-10ms)")
     print("• Fila 1: Round Robin (quantum 11-20ms)")
-    print("• Fila 2: FCFS (First Come First Served)")
+    print("• Fila 3: FCFS (First Come First Served)")
     print("• Todos os processos iniciam na Fila 0")
     print("• Processos com quantum expirado descem de fila")
-    print("• Processos que voltam do I/O retornam à Fila 0")
-    print("• Preempção: Fila 0 > Fila 1 > Fila 2")
+    print("• Processos que voltam do I/O retornam à fila original")
+    print("• Preempção: Fila 0 > Fila 1 > Fila 3")
     print("=" * 60)
     
     # Verifica se foi passado arquivo JSON como argumento

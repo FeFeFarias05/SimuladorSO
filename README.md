@@ -8,13 +8,13 @@ Este projeto implementa um simulador para escalonamento de processos em um siste
 - **Escalonador Multinível com Feedback** com 3 filas
 - **Fila 0**: Round Robin (quantum de 1ms a 10ms)
 - **Fila 1**: Round Robin (quantum de 11ms a 20ms)  
-- **Fila 2**: FCFS (First Come First Served)
+- **Fila 3**: FCFS (First Come First Served)
 
 ### Regras de Funcionamento
 1. **Todos os processos iniciam na Fila 0**
 2. **Movimento entre filas**: Processos que não terminam no quantum são movidos para a fila inferior
-3. **Retorno do I/O**: Processos que voltam do I/O retornam sempre à Fila 0
-4. **Prioridade das filas**: Fila 0 > Fila 1 > Fila 2
+3. **Retorno do I/O**: Processos que voltam do I/O retornam à fila original
+4. **Prioridade das filas**: Fila 0 > Fila 1 > Fila 3
 5. **Preempção**: Filas superiores sempre preemptam filas inferiores
 
 ### Estados dos Processos
