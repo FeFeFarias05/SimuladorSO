@@ -7,7 +7,6 @@ def main():
     
     print("=== TESTE DO ESCALONADOR MULTINÍVEL COM FEEDBACK ===\n")
     
-    # Criação dos processos de teste
     A = Processo('A', 2, 5, 6, 1, 0)  # CPU burst 2ms, I/O 5ms, total 6ms
     B = Processo('B', 3, 10, 6, 2, 0)  # CPU burst 3ms, I/O 10ms, total 6ms
     C = Processo('C', 0, 0, 14, 3, 0)   # Sem I/O, total 14ms
@@ -15,17 +14,13 @@ def main():
 
     processos = [A, B, C, D]
     
-    # Configura quantum conforme especificação
-    quantum_fila0 = 5  # 1-10ms
-    quantum_fila1 = 15  # 11-20ms
+    quantum_fila0 = 5
+    quantum_fila1 = 15 
     
-    # Cria o escalonador multinível
     escalonador = EscalonadorMultinivel(processos, quantum_fila0, quantum_fila1)
 
-    # Executa a simulação
     linha_tempo_cpu = escalonador.executar_simulacao()
 
-    # Gera o relatório
     escalonador.gerar_relatorio()
 
 def teste_com_json():
@@ -36,12 +31,10 @@ def teste_com_json():
         with open('examples/input_example.json', 'r') as f:
             data = json.load(f)
         
-        # Extrai configuração
         config = data.get('config', {})
         quantum_fila0 = config.get('quantum_q0', 5)
         quantum_fila1 = config.get('quantum_q1', 15)
         
-        # Cria processos do JSON
         processos = []
         for i, proc_data in enumerate(data['processes']):
             processo = Processo(
@@ -54,7 +47,6 @@ def teste_com_json():
             )
             processos.append(processo)
         
-        # Executa simulação
         escalonador = EscalonadorMultinivel(processos, quantum_fila0, quantum_fila1)
         escalonador.executar_simulacao()
         escalonador.gerar_relatorio()
@@ -68,24 +60,19 @@ def teste_casos_extremos():
     """Teste com casos extremos"""
     print("\n=== TESTE COM CASOS EXTREMOS ===\n")
     
-    # Processo com quantum muito pequeno vs muito grande
     processos = [
-        Processo('P1', 1, 0, 20, 1, 0),  # Vai ser movido várias vezes entre filas
-        Processo('P2', 0, 0, 5, 2, 0),   # Processo curto
-        Processo('P3', 2, 3, 12, 3, 0),  # Com I/O
+        Processo('P1', 1, 0, 20, 1, 0),
+        Processo('P2', 0, 0, 5, 2, 0),
+        Processo('P3', 2, 3, 12, 3, 0),
     ]
     
-    # Quantum extremo: muito pequeno na fila 0
     escalonador = EscalonadorMultinivel(processos, quantum_fila0=1, quantum_fila1=10)
     escalonador.executar_simulacao()
     escalonador.gerar_relatorio()
 
 if __name__ == "__main__":
-    # Executa o teste principal
     main()
     
-    # Executa teste com JSON
     teste_com_json()
     
-    # Executa teste com casos extremos
     teste_casos_extremos()

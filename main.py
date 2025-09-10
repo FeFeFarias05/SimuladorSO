@@ -52,7 +52,6 @@ def exemplo_basico():
         io_info = f"I/O: {p.tempo_io_original}ms" if p.tempo_io_original > 0 else "Sem I/O"
         print(f"  {p.nome}: CPU Burst={p.cpu_burst_original}ms, {io_info}, Total CPU={p.tempo_total_cpu}ms")
     
-    # Executa com quantums padrão da especificação
     escalonador = EscalonadorMultinivel(processos, quantum_fila0=5, quantum_fila1=15)
     escalonador.executar_simulacao()
     escalonador.gerar_relatorio()
@@ -63,15 +62,14 @@ def exemplo_quantum_pequeno():
     print("=" * 60)
     
     processos = [
-        Processo('X', 0, 0, 12),  # Processo que vai percorrer todas as filas
-        Processo('Y', 0, 0, 8),   # Outro processo CPU-intensivo
+        Processo('X', 0, 0, 12),
+        Processo('Y', 0, 0, 8),
     ]
     
     print("PROCESSOS:")
     for p in processos:
         print(f"  {p.nome}: Total CPU={p.tempo_total_cpu}ms (sem I/O)")
     
-    # Quantum muito pequeno para demonstrar movimento
     escalonador = EscalonadorMultinivel(processos, quantum_fila0=2, quantum_fila1=4)
     escalonador.executar_simulacao()
     escalonador.gerar_relatorio()
@@ -109,7 +107,6 @@ def main():
     print("• Preempção: Fila 0 > Fila 1 > Fila 3")
     print("=" * 60)
     
-    # Verifica se foi passado arquivo JSON como argumento
     if len(sys.argv) > 1:
         arquivo_json = sys.argv[1]
         print(f"\nCARREGANDO PROCESSOS DE: {arquivo_json}")
@@ -121,7 +118,6 @@ def main():
             escalonador.gerar_relatorio()
         return
     
-    # Executa exemplos demonstrativos
     exemplo_basico()
     exemplo_quantum_pequeno() 
     exemplo_preempcao()

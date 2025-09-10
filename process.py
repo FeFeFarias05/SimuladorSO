@@ -2,7 +2,7 @@ class Processo:
     def __init__(self, nome, cpu_burst, tempo_io, tempo_total_cpu, ordem=0, prioridade=0):
         self.nome = nome
         self.cpu_burst_original = cpu_burst
-        self.cpu_burst_atual = cpu_burst  # CPU burst atual (pode ser interrompido)
+        self.cpu_burst_atual = cpu_burst
         self.tempo_io_original = 0 if tempo_io == "-" else tempo_io
         self.tempo_io_restante = self.tempo_io_original
         self.tempo_total_cpu = tempo_total_cpu
@@ -13,19 +13,16 @@ class Processo:
         # Estados: 'ready', 'running', 'blocked', 'finished'
         self.status = 'ready'
         
-        # Controle do escalonador multinível
         self.fila_atual = 0
         self.quantum_restante = 0
         
-        # Estatísticas
         self.tempo_chegada = 0
         self.tempo_inicio = None
         self.tempo_fim = None
         self.linha_tempo = []
-        
-        # Controle de I/O
+   
         self.em_io = False
-        self.cpu_bursts_salvos = []  # Para salvar CPU bursts quando vai para I/O
+        self.cpu_bursts_salvos = []
 
     def resetar_cpu_burst(self):
         """Reseta o CPU burst quando o processo retorna do I/O"""
