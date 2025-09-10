@@ -37,10 +37,9 @@ def carregar_processos_json(arquivo):
 
 def exemplo_basico():
     """Exemplo básico demonstrando o escalonador multinível"""
-    print("🔥 EXEMPLO BÁSICO - ESCALONADOR MULTINÍVEL COM FEEDBACK")
+    print("EXEMPLO BÁSICO - ESCALONADOR MULTINÍVEL COM FEEDBACK")
     print("=" * 60)
     
-    # Cria processos que demonstram bem o algoritmo
     processos = [
         Processo('A', 2, 3, 8),   # Processo com I/O
         Processo('B', 0, 0, 15),  # Processo CPU-intensivo (vai para fila 3)
@@ -60,7 +59,7 @@ def exemplo_basico():
 
 def exemplo_quantum_pequeno():
     """Exemplo com quantum pequeno para mostrar movimento entre filas"""
-    print("\n🚀 EXEMPLO COM QUANTUM PEQUENO - DEMONSTRA MOVIMENTO ENTRE FILAS")
+    print("\nEXEMPLO COM QUANTUM PEQUENO - DEMONSTRA MOVIMENTO ENTRE FILAS")
     print("=" * 60)
     
     processos = [
@@ -79,7 +78,7 @@ def exemplo_quantum_pequeno():
 
 def exemplo_preempcao():
     """Exemplo demonstrando preempção entre filas"""
-    print("\n⚡ EXEMPLO DE PREEMPÇÃO - PRIORIDADE ENTRE FILAS")
+    print("\nEXEMPLO DE PREEMPÇÃO - PRIORIDADE ENTRE FILAS")
     print("=" * 60)
     
     processos = [
@@ -97,8 +96,8 @@ def exemplo_preempcao():
 
 def main():
     """Função principal"""
-    print("🎯 SIMULADOR DE ESCALONADOR MULTINÍVEL COM FEEDBACK")
-    print("📋 Implementação conforme especificação do trabalho")
+    print("SIMULADOR DE ESCALONADOR MULTINÍVEL COM FEEDBACK")
+    print("Implementação conforme especificação do trabalho")
     print("=" * 60)
     print("ESPECIFICAÇÕES:")
     print("• Fila 0: Round Robin (quantum 1-10ms)")
@@ -113,7 +112,7 @@ def main():
     # Verifica se foi passado arquivo JSON como argumento
     if len(sys.argv) > 1:
         arquivo_json = sys.argv[1]
-        print(f"\n📂 CARREGANDO PROCESSOS DE: {arquivo_json}")
+        print(f"\nCARREGANDO PROCESSOS DE: {arquivo_json}")
         
         processos, q0, q1 = carregar_processos_json(arquivo_json)
         if processos:
@@ -127,8 +126,8 @@ def main():
     exemplo_quantum_pequeno() 
     exemplo_preempcao()
     
-    print("\n✅ SIMULAÇÃO CONCLUÍDA!")
-    print("💡 Para usar arquivo JSON: python main.py examples/input_example.json")
+    print("\nSIMULAÇÃO CONCLUÍDA!")
+    print("Para usar arquivo JSON: python main.py examples/input_example.json")
 
 if __name__ == "__main__":
     main()

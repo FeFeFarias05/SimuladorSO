@@ -11,10 +11,9 @@ class EscalonadorMultinivel:
             raise ValueError(f"Quantum da Fila 1 deve estar entre 11-20ms. Valor fornecido: {quantum_fila1}ms")
             
         # Configuração dos quantums
-        self.quantum_fila0 = quantum_fila0  # 1-10ms
-        self.quantum_fila1 = quantum_fila1  # 11-20ms
+        self.quantum_fila0 = quantum_fila0 
+        self.quantum_fila1 = quantum_fila1
         
-        # As três filas do escalonador multinível
         self.fila0 = deque()  # Round Robin com quantum pequeno
         self.fila1 = deque()  # Round Robin com quantum maior
         self.fila2 = deque()  # FCFS
@@ -46,13 +45,13 @@ class EscalonadorMultinivel:
         2. Fila 1 (prioridade média) 
         3. Fila 2 (menor prioridade)
         """
-        # Prioridade 1: Fila 0 (Round Robin - quantum pequeno)
+        # Prioridade 1: Fila 0 (quantum pequeno)
         if self.fila0:
             processo = self.fila0.popleft()
             processo.quantum_restante = self.quantum_fila0
             return processo
         
-        # Prioridade 2: Fila 1 (Round Robin - quantum maior)  
+        # Prioridade 2: Fila 1 (quantum maior)  
         if self.fila1:
             processo = self.fila1.popleft()
             processo.quantum_restante = self.quantum_fila1
@@ -137,7 +136,6 @@ class EscalonadorMultinivel:
             self.mover_processo_para_fila_inferior(processo)
             return 'quantum_expired'
             
-        # Continua executando
         return 'running'
 
     def verificar_preempcao(self, processo_atual):
@@ -261,7 +259,7 @@ class EscalonadorMultinivel:
         
         # Log de execução
         print("\n--- LOG DE EXECUÇÃO ---")
-        for log in self.log_execucao[-20:]:  # Últimas 20 entradas
+        for log in self.log_execucao[-20:]:
             print(log)
         
         print(f"\nTempo total de simulação: {self.tempo_atual}ms")

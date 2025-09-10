@@ -14,7 +14,7 @@ class Processo:
         self.status = 'ready'
         
         # Controle do escalonador multinível
-        self.fila_atual = 0  # Todos os processos começam na fila 0
+        self.fila_atual = 0
         self.quantum_restante = 0
         
         # Estatísticas
