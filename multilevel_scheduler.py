@@ -138,16 +138,30 @@ class EscalonadorMultinivel:
             
         return False
 
+    def mostrarEstadoFilas(self):
+        """Mostra o estado atual de todas as filas de forma concisa"""
+        fila0_str = f"F0[{','.join([p.nome for p in self.fila0])}]" if self.fila0 else "F0[]"
+        fila1_str = f"F1[{','.join([p.nome for p in self.fila1])}]" if self.fila1 else "F1[]"
+        fila2_str = f"F2[{','.join([p.nome for p in self.fila2])}]" if self.fila2 else "F2[]"
+        bloq_str = f"B[{','.join([p.nome for p in self.bloqueados])}]" if self.bloqueados else "B[]"
+        exec_str = f"▶{self.processoExecutando.nome}" if self.processoExecutando else "▶-"
+        
+        print(f"{Cores.CIANO}T{self.tempoAtual:2d}:{Cores.RESET} {fila0_str} {fila1_str} {fila2_str} {bloq_str} {exec_str}")
+
     def simulacao(self):
         print(f"{Cores.ROXO}{Cores.NEGRITO}=== Iniciando Simulação do Escalonador Multinível ==={Cores.RESET}")
         print(f"Quantum Fila 0: {self.quantumFila0}ms{Cores.RESET}")
         print(f"Quantum Fila 1: {self.quantumFila1}ms{Cores.RESET}")
         print(f"Fila 3: FCFS{Cores.RESET}")
+        print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- ACOMPANHAMENTO DAS FILAS ---{Cores.RESET}")
 
         while (self.fila0 or self.fila1 or self.fila2 or
                self.bloqueados or self.processoExecutando):
 
             self.processarBloqueadosPorIo()
+
+            if self.tempoAtual % 5 == 0 or self.tempoAtual < 10:
+                self.mostrarEstadoFilas()
 
             if self.verificarPreempcao(self.processoExecutando):
                 if self.processoExecutando:
