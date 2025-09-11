@@ -1,6 +1,18 @@
 from process import Processo
 from collections import deque
 
+# Classe para cores no terminal
+class Cores:
+    AZUL = '\033[94m'
+    VERDE = '\033[92m'
+    AMARELO = '\033[93m'
+    VERMELHO = '\033[91m'
+    ROXO = '\033[95m'
+    CIANO = '\033[96m'
+    BRANCO = '\033[97m'
+    NEGRITO = '\033[1m'
+    RESET = '\033[0m'
+
 class EscalonadorMultinivel:
     def __init__(self, processos, quantum_fila0=5, quantum_fila1=15):
         
@@ -127,11 +139,10 @@ class EscalonadorMultinivel:
         return False
 
     def executar_simulacao(self):
-        print("=== Iniciando Simuaçãp do Escalonador Multinível===")
-        print(f"Quantum Fila 0: {self.quantum_fila0}ms")
-        print(f"Quantum Fila 1: {self.quantum_fila1}ms")
-        print(f"Fila 3: FCFS")
-        print("=" * 60)
+        print(f"{Cores.ROXO}{Cores.NEGRITO}=== Iniciando Simulação do Escalonador Multinível ==={Cores.RESET}")
+        print(f"Quantum Fila 0: {self.quantum_fila0}ms{Cores.RESET}")
+        print(f"Quantum Fila 1: {self.quantum_fila1}ms{Cores.RESET}")
+        print(f"Fila 3: FCFS{Cores.RESET}")
 
         while (self.fila0 or self.fila1 or self.fila2 or
                self.bloqueados or self.processo_executando): #processos estão rodando
@@ -179,22 +190,27 @@ class EscalonadorMultinivel:
             
             self.tempo_atual += 1
 
-        print("=== Simulação Concluída ===")
+        print(f"{Cores.VERDE}{Cores.NEGRITO}=== Simulação Concluída ==={Cores.RESET}")
+        print(f"{Cores.ROXO}=" * 30 + Cores.RESET)
+
         return self.linha_tempo_cpu
 
     def gerar_relatorio(self):
-        print("===== RELATÓRIO DA SIMULAÇÃO =====")
+        print("\n")
+        print("\n")
 
-        print("\n--- Linha do tempos da CPU ---")
+        print(f"{Cores.ROXO}{Cores.NEGRITO}===== RELATÓRIO DA SIMULAÇÃO ====={Cores.RESET}")
+
+        print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- Linha do tempo da CPU ---{Cores.RESET}")
         print("Tempo: " + " ".join([f"{i:>2}" for i in range(len(self.linha_tempo_cpu))]))
         print("CPU:   " + " ".join([f"{nome:>2}" for nome in self.linha_tempo_cpu]))
         
-        print("\n--- Linha do tempo dos estados dos processos ---")
+        print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- Linha do tempo dos estados dos processos ---{Cores.RESET}")
         estado_formatado = {
             'ready': 'R',
             'running': 'E', 
-            'blocked': 'B',
-            'finished': 'F'
+            'blocked': f'{Cores.VERMELHO}B{Cores.RESET}',
+            'finished': f'{Cores.VERDE}F{Cores.RESET}'
         }
         
         for p in sorted(self.finalizados, key=lambda x: x.nome):
@@ -202,17 +218,17 @@ class EscalonadorMultinivel:
                 p.linha_tempo.append('finished')
                 
             linha = " ".join([f"{estado_formatado.get(s, '?'):>2}" for s in p.linha_tempo])
-            print(f"{p.nome}:   {linha}")
+            print(f"{Cores.BRANCO}{p.nome}:{Cores.RESET}   {linha}")
 
 
-        print("\n--- Estatísticas ---")
+        print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- Estatísticas ---{Cores.RESET}")
         for p in sorted(self.finalizados, key=lambda x: x.nome):
             turnaround = p.tempo_fim if p.tempo_fim else self.tempo_atual
             tempo_resposta = p.tempo_inicio if p.tempo_inicio else 0
-            print(f"{p.nome}: Turnaround={turnaround}ms, Tempo de Resposta={tempo_resposta}ms")
+            print(f"{Cores.BRANCO}{p.nome}:{Cores.RESET} {Cores.VERDE}Turnaround={turnaround}ms{Cores.RESET}, {Cores.CIANO}Tempo de Resposta={tempo_resposta}ms{Cores.RESET}")
         
-        print("\n--- Atividade dos processos durante a execução ---")
+        print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- Atividade dos processos durante a execução ---{Cores.RESET}")
         for log in self.log_execucao[-20:]:
-            print(log)
-        
-        print(f"\nTempo total de simulação: {self.tempo_atual}ms")
+            print(f"{log}")
+
+        print(f"\n{Cores.AZUL}{Cores.NEGRITO}Tempo total de simulação: {self.tempo_atual}ms{Cores.RESET}")
