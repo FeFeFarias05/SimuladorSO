@@ -16,28 +16,28 @@ class Cores:
     NEGRITO = '\033[1m'
     RESET = '\033[0m'
 
-def carregar_processos_json(arquivo):
+def carregarProcessosJson(arquivo):
     try:
         with open(arquivo, 'r') as f:
             data = json.load(f)
         
         config = data.get('config', {})
-        quantum_fila0 = config.get('quantum_q0', 5)
-        quantum_fila1 = config.get('quantum_q1', 15)
+        quantumFila0 = config.get('quantum_q0', 5)
+        quantumFila1 = config.get('quantum_q1', 15)
         
         processos = []
-        for i, proc_data in enumerate(data['processes']):
+        for i, procData in enumerate(data['processes']):
             processo = Processo(
-                nome=proc_data['name'],
-                cpu_burst=proc_data['cpu_burst'],
-                tempo_io=proc_data['io_time'],
-                tempo_total_cpu=proc_data['total_cpu_time'],
+                nome=procData['name'],
+                cpuBurst=procData['cpu_burst'],
+                tempoIo=procData['io_time'],
+                tempoTotalCpu=procData['total_cpu_time'],
                 ordem=i,
-                prioridade=proc_data.get('priority', 0)
+                prioridade=procData.get('priority', 0)
             )
             processos.append(processo)
         
-        return processos, quantum_fila0, quantum_fila1
+        return processos, quantumFila0, quantumFila1
         
     except FileNotFoundError:
         print(f"{Cores.VERMELHO}Erro: Arquivo {arquivo} não encontrado{Cores.RESET}")
@@ -59,16 +59,16 @@ def main():
     print(f"{Cores.ROXO}=" * 60 + Cores.RESET)
     
     if len(sys.argv) > 1:
-        arquivo_json = sys.argv[1]
+        arquivoJson = sys.argv[1]
         print("\n")
-        print(f"\n{Cores.VERDE}{Cores.NEGRITO}CARREGANDO PROCESSOS DE: {arquivo_json}{Cores.RESET}")
+        print(f"\n{Cores.VERDE}{Cores.NEGRITO}CARREGANDO PROCESSOS DE: {arquivoJson}{Cores.RESET}")
         print("\n")
 
-        processos, q0, q1 = carregar_processos_json(arquivo_json)
+        processos, q0, q1 = carregarProcessosJson(arquivoJson)
         if processos:
-            escalonador = EscalonadorMultinivel(processos, q0, q1)
-            escalonador.executar_simulacao()
-            escalonador.gerar_relatorio()
+            escalonador = EscalonadorMultinivel(processos, quantumFila0=q0, quantumFila1=q1)
+            escalonador.executarSimulacao()
+            escalonador.gerarRelatorio()
         else:
             print(f"{Cores.VERMELHO}Erro ao carregar processos. Verifique o arquivo JSON.{Cores.RESET}")
     else:

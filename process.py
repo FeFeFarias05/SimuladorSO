@@ -1,37 +1,37 @@
 class Processo:
-    def __init__(self, nome, cpu_burst, tempo_io, tempo_total_cpu, ordem=0, prioridade=0):
+    def __init__(self, nome, cpuBurst, tempoIo, tempoTotalCpu, ordem=0, prioridade=0):
         self.nome = nome
-        self.cpu_burst_original = cpu_burst
-        self.cpu_burst_atual = cpu_burst
-        self.tempo_io_original = 0 if tempo_io == "-" else tempo_io
-        self.tempo_io_restante = self.tempo_io_original
-        self.tempo_total_cpu = tempo_total_cpu
-        self.tempo_cpu_restante = tempo_total_cpu
+        self.cpuBurstOriginal = cpuBurst
+        self.cpuBurstAtual = cpuBurst
+        self.tempoIoOriginal = 0 if tempoIo == "-" else tempoIo
+        self.tempoIoRestante = self.tempoIoOriginal
+        self.tempoTotalCpu = tempoTotalCpu
+        self.tempoCpuRestante = tempoTotalCpu
         self.ordem = ordem
         self.prioridade = prioridade
         
-        self.status = 'ready' #todos começam como prontos
+        self.status = 'ready'
         
-        self.fila_atual = 0
-        self.quantum_restante = 0
+        self.filaAtual = 0
+        self.quantumRestante = 0
         
-        self.tempo_chegada = 0
-        self.tempo_inicio = None
-        self.tempo_fim = None
-        self.linha_tempo = []
-   
-        self.em_io = False
-        self.cpu_bursts_salvos = []
+        self.tempoChegada = 0
+        self.tempoInicio = None
+        self.tempoFim = None
+        self.linhaTempo = []
 
-    def resetar_cpu_burst(self):
-        if self.cpu_bursts_salvos:
-            self.cpu_burst_atual = self.cpu_bursts_salvos.pop(0)
+        self.emIo = False
+        self.cpuBurstsSalvos = []
+
+    def resetarCpuBurst(self):
+        if self.cpuBurstsSalvos:
+            self.cpuBurstAtual = self.cpuBurstsSalvos.pop(0)
         else:
-            self.cpu_burst_atual = self.cpu_burst_original
+            self.cpuBurstAtual = self.cpuBurstOriginal
 
-    def salvar_cpu_burst(self):
-        if self.cpu_burst_atual > 0:
-            self.cpu_bursts_salvos.append(self.cpu_burst_atual)
+    def salvarCpuBurst(self):
+        if self.cpuBurstAtual > 0:
+            self.cpuBurstsSalvos.append(self.cpuBurstAtual)
 
     def __str__(self):
-        return f"Processo: {self.nome}, Fila: {self.fila_atual}, Status: {self.status}, CPU Restante: {self.tempo_cpu_restante}ms"
+        return f"Processo: {self.nome}, Fila: {self.filaAtual}, Status: {self.status}, CPU Restante: {self.tempoCpuRestante}ms"

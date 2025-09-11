@@ -3,51 +3,51 @@ import sys
 from process import Processo
 from multilevel_scheduler import EscalonadorMultinivel
 
-def criar_processos_teste(quantidade):
+def criarProcessosTeste(quantidade):
     processos = []
     
     for i in range(quantidade):
         if i % 4 == 0:
-            processo = Processo(f'P{i:03d}', cpu_burst=2, tempo_io=3, tempo_total_cpu=8)
+            processo = Processo(f'P{i:03d}', cpuBurst=2, tempoIo=3, tempoTotalCpu=8)
         elif i % 4 == 1:
-            processo = Processo(f'P{i:03d}', cpu_burst=0, tempo_io=0, tempo_total_cpu=6)
+            processo = Processo(f'P{i:03d}', cpuBurst=0, tempoIo=0, tempoTotalCpu=6)
         elif i % 4 == 2:
-            processo = Processo(f'P{i:03d}', cpu_burst=0, tempo_io=0, tempo_total_cpu=12)
+            processo = Processo(f'P{i:03d}', cpuBurst=0, tempoIo=0, tempoTotalCpu=12)
         else:
-            processo = Processo(f'P{i:03d}', cpu_burst=1, tempo_io=2, tempo_total_cpu=10)
+            processo = Processo(f'P{i:03d}', cpuBurst=1, tempoIo=2, tempoTotalCpu=10)
         
         processos.append(processo)
     
     return processos
 
-def teste_escalabilidade(quantidade_processos, verbose=False):
-    print(f"Teste com {quantidade_processos} processos")
+def testeEscalabilidade(quantidadeProcessos, verbose=False):
+    print(f"Teste com {quantidadeProcessos} processos")
     
-    inicio_criacao = time.time()
-    processos = criar_processos_teste(quantidade_processos)
-    tempo_criacao = time.time() - inicio_criacao
+    inicioCriacao = time.time()
+    processos = criarProcessosTeste(quantidadeProcessos)
+    tempoCriacao = time.time() - inicioCriacao
     
-    escalonador = EscalonadorMultinivel(processos, quantum_fila0=3, quantum_fila1=11)
+    escalonador = EscalonadorMultinivel(processos, quantumFila0=3, quantumFila1=11)
     
-    inicio_simulacao = time.time()
-    linha_tempo_cpu = escalonador.executar_simulacao()
-    tempo_simulacao = time.time() - inicio_simulacao
+    inicioSimulacao = time.time()
+    linhaTempoCpu = escalonador.executarSimulacao()
+    tempoSimulacao = time.time() - inicioSimulacao
     
-    if verbose and quantidade_processos <= 10:
-        escalonador.gerar_relatorio()
+    if verbose and quantidadeProcessos <= 10:
+        escalonador.gerarRelatorio()
     
-    processos_por_segundo = quantidade_processos / tempo_simulacao if tempo_simulacao > 0 else float('inf')
+    processosPorSegundo = quantidadeProcessos / tempoSimulacao if tempoSimulacao > 0 else float('inf')
     
     return {
-        'quantidade': quantidade_processos,
-        'tempo_criacao': tempo_criacao,
-        'tempo_simulacao': tempo_simulacao,
-        'tempo_total_simulado': escalonador.tempo_atual,
-        'processos_finalizados': len(escalonador.finalizados),
-        'performance': processos_por_segundo
+        'quantidade': quantidadeProcessos,
+        'tempoCriacao': tempoCriacao,
+        'tempoSimulacao': tempoSimulacao,
+        'tempoTotalSimulado': escalonador.tempoAtual,
+        'processosFinalizados': len(escalonador.finalizados),
+        'performance': processosPorSegundo
     }
 
-def teste_progressivo():
+def testeProgressivo():
     print("Teste de escalabilidade progressiva")
     
     quantidades = [5, 10, 25, 50, 100, 250, 500, 1000, 2000, 3000]
@@ -55,7 +55,7 @@ def teste_progressivo():
     
     for quantidade in quantidades:
         try:
-            resultado = teste_escalabilidade(quantidade, verbose=(quantidade <= 10))
+            resultado = testeEscalabilidade(quantidade, verbose=(quantidade <= 10))
             resultados.append(resultado)
         except KeyboardInterrupt:
             print("Teste interrompido pelo usuário")
@@ -69,8 +69,8 @@ def teste_progressivo():
     print("-" * 60)
     
     for r in resultados:
-        print(f"{r['quantidade']:<10} {r['tempo_criacao']:<12.4f} {r['tempo_simulacao']:<13.4f} "
-              f"{r['tempo_total_simulado']:<13} {r['performance']:<10.2f}")
+        print(f"{r['quantidade']:<10} {r['tempoCriacao']:<12.4f} {r['tempoSimulacao']:<13.4f} "
+              f"{r['tempoTotalSimulado']:<13} {r['performance']:<10.2f}")
 
 
 def main():
@@ -79,11 +79,11 @@ def main():
     if len(sys.argv) > 1:
         try:
             quantidade = int(sys.argv[1])
-            teste_escalabilidade(quantidade, verbose=True)
+            testeEscalabilidade(quantidade, verbose=True)
         except ValueError:
             print("Erro: forneça um número válido de processos")
     else:
-        teste_progressivo()
+        testeProgressivo()
 
 if __name__ == "__main__":
     main()
