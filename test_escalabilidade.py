@@ -72,23 +72,6 @@ def teste_progressivo():
         print(f"{r['quantidade']:<10} {r['tempo_criacao']:<12.4f} {r['tempo_simulacao']:<13.4f} "
               f"{r['tempo_total_simulado']:<13} {r['performance']:<10.2f}")
 
-def teste_memoria():
-    import psutil
-    import os
-    
-    print("Teste de uso de memória")
-    
-    processo_atual = psutil.Process(os.getpid())
-    memoria_inicial = processo_atual.memory_info().rss / 1024 / 1024
-    
-    quantidade = 1000
-    processos = criar_processos_teste(quantidade)
-    
-    memoria_pos_criacao = processo_atual.memory_info().rss / 1024 / 1024
-    print(f"Memória inicial: {memoria_inicial:.2f} MB")
-    print(f"Memória após criar {quantidade} processos: {memoria_pos_criacao:.2f} MB")
-    print(f"Incremento: {memoria_pos_criacao - memoria_inicial:.2f} MB")
-    print(f"Memória por processo: {(memoria_pos_criacao - memoria_inicial) / quantidade * 1024:.2f} KB")
 
 def main():
     print("Teste de escalabilidade do escalonador multinível")
@@ -101,7 +84,6 @@ def main():
             print("Erro: forneça um número válido de processos")
     else:
         teste_progressivo()
-        teste_memoria()
 
 if __name__ == "__main__":
     main()
