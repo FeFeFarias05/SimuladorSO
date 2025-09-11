@@ -164,9 +164,7 @@ class EscalonadorMultinivel:
 
     def simulacao(self):
         print(f"{Cores.ROXO}{Cores.NEGRITO}=== Iniciando Simulação do Escalonador Multinível ==={Cores.RESET}")
-        print(f"Quantum Fila 0: {self.quantumFila0}ms{Cores.RESET}")
-        print(f"Quantum Fila 1: {self.quantumFila1}ms{Cores.RESET}")
-        print(f"Fila 3: FCFS{Cores.RESET}")
+        print(f"Quantum Fila 0: {self.quantumFila0}ms | Quantum Fila 1: {self.quantumFila1}ms | Fila 2: FCFS{Cores.RESET}")
         print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- ACOMPANHAMENTO DAS FILAS ---{Cores.RESET}")
 
         while (self.fila0 or self.fila1 or self.fila2 or
@@ -174,7 +172,8 @@ class EscalonadorMultinivel:
 
             self.processarBloqueadosPorIo()
 
-            if self.tempoAtual % 5 == 0 or self.tempoAtual < 10:
+            # Mostrar estado das filas apenas nos primeiros momentos
+            if self.tempoAtual < 5:
                 self.mostrarEstadoFilas()
 
             if self.verificarPreempcao(self.processoExecutando):
@@ -221,10 +220,8 @@ class EscalonadorMultinivel:
             
             self.tempoAtual += 1
 
-        print(f"{Cores.VERDE}{Cores.NEGRITO}=== Simulação Concluída ==={Cores.RESET}")
-        print(f"{Cores.ROXO}=" * 30 + Cores.RESET)
-        
-        # Mostrar estado das filas durante a execução
+        # Mostrar estado final das filas
+        print(f"\n{Cores.CIANO}{Cores.NEGRITO}=== RESUMO FINAL DAS FILAS ==={Cores.RESET}")
         self.mostrarEstadoFilas()
 
         return self.linhaTempoCpu
@@ -278,10 +275,6 @@ class EscalonadorMultinivel:
 
     def detectarExecucaoSimultanea(self):
         """Detecta momentos em que processos estão rodando simultaneamente em filas diferentes"""
-        print(f"\n{Cores.AMARELO}{Cores.NEGRITO}=== ANÁLISE DE EXECUÇÃO SIMULTÂNEA ==={Cores.RESET}")
-        print(f"{Cores.CIANO}Detectando momentos em que processos estão ativos em filas diferentes...{Cores.RESET}")
-        print()
-        
         momentosSimultaneos = []
         for t, estado in enumerate(self.linhaTempoFilas):
             processosAtivos = []
@@ -302,59 +295,12 @@ class EscalonadorMultinivel:
                 momentosSimultaneos.append((t, processosAtivos, filasAtivas))
         
         if momentosSimultaneos:
-            print(f"{Cores.VERDE}✓ Encontrados {len(momentosSimultaneos)} momentos com execução simultânea{Cores.RESET}")
-            print(f"{Cores.AMARELO}Primeiros 10 momentos:{Cores.RESET}")
-            print()
-            
-            for i, (t, processos, filas) in enumerate(momentosSimultaneos[:10]):
-                # Agrupar processos por fila
-                processos_por_fila = {}
-                for p, f in processos:
-                    if f not in processos_por_fila:
-                        processos_por_fila[f] = []
-                    processos_por_fila[f].append(p)
-                
-                # Formatar saída
-                filas_str = []
-                for fila in sorted(filas):
-                    cor = Cores.VERDE if fila == 0 else Cores.AMARELO if fila == 1 else Cores.AZUL
-                    processos_str = ', '.join(processos_por_fila[fila])
-                    filas_str.append(f"{cor}Fila {fila}: {processos_str}{Cores.RESET}")
-                
-                print(f"  {Cores.BRANCO}T{t:2d}:{Cores.RESET} {' | '.join(filas_str)}")
-            
-            if len(momentosSimultaneos) > 10:
-                print(f"\n{Cores.CINZA}... e mais {len(momentosSimultaneos) - 10} momentos{Cores.RESET}")
+            print(f"{Cores.VERDE}✓ Execução simultânea: {len(momentosSimultaneos)} momentos detectados{Cores.RESET}")
         else:
-            print(f"{Cores.VERDE}✓ Nenhum momento de execução simultânea detectado{Cores.RESET}")
-            print(f"{Cores.CINZA}  Todos os processos sempre estiveram na mesma fila ou não havia processos ativos{Cores.RESET}")
+            print(f"{Cores.VERDE}✓ Nenhuma execução simultânea detectada{Cores.RESET}")
 
     def relatorio(self):
-        print("\n")
-        print("\n")
-
-        print(f"{Cores.ROXO}{Cores.NEGRITO}===== RELATÓRIO DA SIMULAÇÃO ====={Cores.RESET}")
-
-        
-        print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- Linha do tempo dos estados dos processos ---{Cores.RESET}")
-        estadoFormatado = {
-            'ready': 'R',
-            'running': 'E', 
-            'blocked': f'{Cores.VERMELHO}B{Cores.RESET}',
-            'finished': f'{Cores.VERDE}F{Cores.RESET}'
-        }
-        
-        for p in sorted(self.finalizados, key=lambda x: x.nome):
-            while len(p.linhaTempo) < len(self.linhaTempoCpu):
-                p.linhaTempo.append('finished')
-                
-            linha = " ".join([f"{estadoFormatado.get(s, '?'):>2}" for s in p.linhaTempo])
-            print(f"{Cores.BRANCO}{p.nome}:{Cores.RESET}   {linha}")
-
-        
-        print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- Atividade dos processos durante a execução ---{Cores.RESET}")
-        for log in self.logExecucao[-20:]:
-            print(f"{log}")
+        print(f"\n{Cores.ROXO}{Cores.NEGRITO}===== RELATÓRIO DA SIMULAÇÃO ====={Cores.RESET}")
 
         # Análise de execução simultânea
         self.detectarExecucaoSimultanea()
