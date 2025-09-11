@@ -138,7 +138,7 @@ class EscalonadorMultinivel:
             
         return False
 
-    def executarSimulacao(self):
+    def simulacao(self):
         print(f"{Cores.ROXO}{Cores.NEGRITO}=== Iniciando Simulação do Escalonador Multinível ==={Cores.RESET}")
         print(f"Quantum Fila 0: {self.quantumFila0}ms{Cores.RESET}")
         print(f"Quantum Fila 1: {self.quantumFila1}ms{Cores.RESET}")
@@ -194,15 +194,12 @@ class EscalonadorMultinivel:
 
         return self.linhaTempoCpu
 
-    def gerarRelatorio(self):
+    def relatorio(self):
         print("\n")
         print("\n")
 
         print(f"{Cores.ROXO}{Cores.NEGRITO}===== RELATÓRIO DA SIMULAÇÃO ====={Cores.RESET}")
 
-        print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- Linha do tempo da CPU ---{Cores.RESET}")
-        print("Tempo: " + " ".join([f"{i:>2}" for i in range(len(self.linhaTempoCpu))]))
-        print("CPU:   " + " ".join([f"{nome:>2}" for nome in self.linhaTempoCpu]))
         
         print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- Linha do tempo dos estados dos processos ---{Cores.RESET}")
         estadoFormatado = {
@@ -219,12 +216,6 @@ class EscalonadorMultinivel:
             linha = " ".join([f"{estadoFormatado.get(s, '?'):>2}" for s in p.linhaTempo])
             print(f"{Cores.BRANCO}{p.nome}:{Cores.RESET}   {linha}")
 
-
-        print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- Estatísticas ---{Cores.RESET}")
-        for p in sorted(self.finalizados, key=lambda x: x.nome):
-            turnaround = p.tempoFim if p.tempoFim else self.tempoAtual
-            tempoResposta = p.tempoInicio if p.tempoInicio else 0
-            print(f"{Cores.BRANCO}{p.nome}:{Cores.RESET} {Cores.VERDE}Turnaround={turnaround}ms{Cores.RESET}, {Cores.CIANO}Tempo de Resposta={tempoResposta}ms{Cores.RESET}")
         
         print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- Atividade dos processos durante a execução ---{Cores.RESET}")
         for log in self.logExecucao[-20:]:

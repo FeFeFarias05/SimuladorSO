@@ -67,8 +67,8 @@ def main():
         processos, q0, q1 = carregarProcessosJson(arquivoJson)
         if processos:
             escalonador = EscalonadorMultinivel(processos, quantumFila0=q0, quantumFila1=q1)
-            escalonador.executarSimulacao()
-            escalonador.gerarRelatorio()
+            escalonador.simulacao()
+            escalonador.relatorio()
         else:
             print(f"{Cores.VERMELHO}Erro ao carregar processos. Verifique o arquivo JSON.{Cores.RESET}")
     else:

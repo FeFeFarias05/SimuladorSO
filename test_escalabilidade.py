@@ -30,11 +30,11 @@ def testeEscalabilidade(quantidadeProcessos, verbose=False):
     escalonador = EscalonadorMultinivel(processos, quantumFila0=3, quantumFila1=11)
     
     inicioSimulacao = time.time()
-    linhaTempoCpu = escalonador.executarSimulacao()
+    linhaTempoCpu = escalonador.simulacao()
     tempoSimulacao = time.time() - inicioSimulacao
     
     if verbose and quantidadeProcessos <= 10:
-        escalonador.gerarRelatorio()
+        escalonador.relatorio()
     
     processosPorSegundo = quantidadeProcessos / tempoSimulacao if tempoSimulacao > 0 else float('inf')
     
