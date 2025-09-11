@@ -10,6 +10,7 @@ class Cores:
     ROXO = '\033[95m'
     CIANO = '\033[96m'
     BRANCO = '\033[97m'
+    CINZA = '\033[90m'
     NEGRITO = '\033[1m'
     RESET = '\033[0m'
 
@@ -43,6 +44,19 @@ class EscalonadorMultinivel:
         
         self.linhaTempoCpu = []
         self.logExecucao = []
+        self.linhaTempoFilas = []  # Para rastrear as filas a cada momento
+
+    def obterEstadoFilas(self):
+        """Retorna o estado atual das filas para visualização"""
+        estado = {
+            'fila0': [p.nome for p in self.fila0],
+            'fila1': [p.nome for p in self.fila1], 
+            'fila2': [p.nome for p in self.fila2],
+            'bloqueados': [p.nome for p in self.bloqueados],
+            'executando': self.processoExecutando.nome if self.processoExecutando else None,
+            'filaExecutando': self.processoExecutando.filaAtual if self.processoExecutando else None
+        }
+        return estado
 
     def obterProximoProcesso(self):
         if self.fila0:
@@ -177,6 +191,10 @@ class EscalonadorMultinivel:
             else:
                 self.linhaTempoCpu.append('-')
             
+            # Capturar estado atual das filas
+            estadoFilas = self.obterEstadoFilas()
+            self.linhaTempoFilas.append(estadoFilas.copy())
+            
             todosProcessos = (list(self.fila0) + list(self.fila1) + list(self.fila2) + 
                              self.bloqueados + self.finalizados)
             if self.processoExecutando:
@@ -191,8 +209,111 @@ class EscalonadorMultinivel:
 
         print(f"{Cores.VERDE}{Cores.NEGRITO}=== Simulação Concluída ==={Cores.RESET}")
         print(f"{Cores.ROXO}=" * 30 + Cores.RESET)
+        
+        # Mostrar estado das filas durante a execução
+        self.mostrarEstadoFilas()
 
         return self.linhaTempoCpu
+
+    def mostrarEstadoFilas(self, mostrar_todos=False):
+        """Mostra o estado das filas durante a execução"""
+        print(f"\n{Cores.CIANO}{Cores.NEGRITO}=== ESTADO DAS FILAS DURANTE A EXECUÇÃO ==={Cores.RESET}")
+        print(f"{Cores.AMARELO}Legenda: F0=Fila 0 (RR), F1=Fila 1 (RR), F2=Fila 2 (FCFS), B=Bloqueado, E=Executando{Cores.RESET}")
+        print()
+        
+        # Cabeçalho melhorado
+        print(f"{Cores.ROXO}{'T':>3} | {'Fila 0 (RR-' + str(self.quantumFila0) + 'ms)':>25} | {'Fila 1 (RR-' + str(self.quantumFila1) + 'ms)':>25} | {'Fila 2 (FCFS)':>15} | {'Bloqueados':>12} | {'Executando':>12}{Cores.RESET}")
+        print(f"{Cores.ROXO}{'─' * 3}─┼─{'─' * 25}─┼─{'─' * 25}─┼─{'─' * 15}─┼─{'─' * 12}─┼─{'─' * 12}{Cores.RESET}")
+        
+        # Determinar quais momentos mostrar
+        if mostrar_todos or len(self.linhaTempoFilas) <= 50:
+            momentos_para_mostrar = range(len(self.linhaTempoFilas))
+        else:
+            # Mostrar primeiros 20, últimos 10, e alguns do meio
+            momentos_para_mostrar = list(range(20)) + list(range(len(self.linhaTempoFilas)-10, len(self.linhaTempoFilas)))
+            if len(self.linhaTempoFilas) > 60:
+                meio = len(self.linhaTempoFilas) // 2
+                momentos_para_mostrar.extend(range(meio-5, meio+5))
+            momentos_para_mostrar = sorted(set(momentos_para_mostrar))
+        
+        ultimo_tempo = -1
+        for t in momentos_para_mostrar:
+            estado = self.linhaTempoFilas[t]
+            
+            # Adicionar linha de separação se houver gap
+            if t - ultimo_tempo > 1 and ultimo_tempo != -1:
+                print(f"{Cores.CINZA}{'...':>3} │ {'...':>25} │ {'...':>25} │ {'...':>15} │ {'...':>12} │ {'...':>12}{Cores.RESET}")
+            
+            # Formatar filas com cores diferentes
+            fila0_str = f"{Cores.VERDE}{', '.join(estado['fila0'])}{Cores.RESET}" if estado['fila0'] else f"{Cores.CINZA}—{Cores.RESET}"
+            fila1_str = f"{Cores.AMARELO}{', '.join(estado['fila1'])}{Cores.RESET}" if estado['fila1'] else f"{Cores.CINZA}—{Cores.RESET}"
+            fila2_str = f"{Cores.AZUL}{', '.join(estado['fila2'])}{Cores.RESET}" if estado['fila2'] else f"{Cores.CINZA}—{Cores.RESET}"
+            bloqueados_str = f"{Cores.VERMELHO}{', '.join(estado['bloqueados'])}{Cores.RESET}" if estado['bloqueados'] else f"{Cores.CINZA}—{Cores.RESET}"
+            
+            if estado['executando']:
+                cor_executando = Cores.VERDE if estado['filaExecutando'] == 0 else Cores.AMARELO if estado['filaExecutando'] == 1 else Cores.AZUL
+                executando_str = f"{cor_executando}{estado['executando']} (F{estado['filaExecutando']}){Cores.RESET}"
+            else:
+                executando_str = f"{Cores.CINZA}—{Cores.RESET}"
+            
+            print(f"{Cores.BRANCO}{t:3d}{Cores.RESET} │ {fila0_str:>25} │ {fila1_str:>25} │ {fila2_str:>15} │ {bloqueados_str:>12} │ {executando_str:>12}")
+            ultimo_tempo = t
+        
+        if not mostrar_todos and len(self.linhaTempoFilas) > 50:
+            print(f"\n{Cores.CINZA}Nota: Mostrando apenas momentos selecionados. Total de {len(self.linhaTempoFilas)} momentos.{Cores.RESET}")
+
+    def detectarExecucaoSimultanea(self):
+        """Detecta momentos em que processos estão rodando simultaneamente em filas diferentes"""
+        print(f"\n{Cores.AMARELO}{Cores.NEGRITO}=== ANÁLISE DE EXECUÇÃO SIMULTÂNEA ==={Cores.RESET}")
+        print(f"{Cores.CIANO}Detectando momentos em que processos estão ativos em filas diferentes...{Cores.RESET}")
+        print()
+        
+        momentosSimultaneos = []
+        for t, estado in enumerate(self.linhaTempoFilas):
+            processosAtivos = []
+            
+            # Contar processos em cada fila
+            if estado['fila0']:
+                processosAtivos.extend([(p, 0) for p in estado['fila0']])
+            if estado['fila1']:
+                processosAtivos.extend([(p, 1) for p in estado['fila1']])
+            if estado['fila2']:
+                processosAtivos.extend([(p, 2) for p in estado['fila2']])
+            if estado['executando']:
+                processosAtivos.append((estado['executando'], estado['filaExecutando']))
+            
+            # Verificar se há processos em filas diferentes
+            filasAtivas = set([fila for _, fila in processosAtivos])
+            if len(filasAtivas) > 1:
+                momentosSimultaneos.append((t, processosAtivos, filasAtivas))
+        
+        if momentosSimultaneos:
+            print(f"{Cores.VERDE}✓ Encontrados {len(momentosSimultaneos)} momentos com execução simultânea{Cores.RESET}")
+            print(f"{Cores.AMARELO}Primeiros 10 momentos:{Cores.RESET}")
+            print()
+            
+            for i, (t, processos, filas) in enumerate(momentosSimultaneos[:10]):
+                # Agrupar processos por fila
+                processos_por_fila = {}
+                for p, f in processos:
+                    if f not in processos_por_fila:
+                        processos_por_fila[f] = []
+                    processos_por_fila[f].append(p)
+                
+                # Formatar saída
+                filas_str = []
+                for fila in sorted(filas):
+                    cor = Cores.VERDE if fila == 0 else Cores.AMARELO if fila == 1 else Cores.AZUL
+                    processos_str = ', '.join(processos_por_fila[fila])
+                    filas_str.append(f"{cor}Fila {fila}: {processos_str}{Cores.RESET}")
+                
+                print(f"  {Cores.BRANCO}T{t:2d}:{Cores.RESET} {' | '.join(filas_str)}")
+            
+            if len(momentosSimultaneos) > 10:
+                print(f"\n{Cores.CINZA}... e mais {len(momentosSimultaneos) - 10} momentos{Cores.RESET}")
+        else:
+            print(f"{Cores.VERDE}✓ Nenhum momento de execução simultânea detectado{Cores.RESET}")
+            print(f"{Cores.CINZA}  Todos os processos sempre estiveram na mesma fila ou não havia processos ativos{Cores.RESET}")
 
     def relatorio(self):
         print("\n")
@@ -220,5 +341,8 @@ class EscalonadorMultinivel:
         print(f"\n{Cores.AMARELO}{Cores.NEGRITO}--- Atividade dos processos durante a execução ---{Cores.RESET}")
         for log in self.logExecucao[-20:]:
             print(f"{log}")
+
+        # Análise de execução simultânea
+        self.detectarExecucaoSimultanea()
 
         print(f"\n{Cores.AZUL}{Cores.NEGRITO}Tempo total de simulação: {self.tempoAtual}ms{Cores.RESET}")
