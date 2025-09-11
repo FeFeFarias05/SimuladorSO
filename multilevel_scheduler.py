@@ -33,26 +33,17 @@ class EscalonadorMultinivel:
         self.log_execucao = []
 
     def obter_proximo_processo(self):
-        """
-        Seleciona o próximo processo seguindo a prioridade das filas:
-        1. Fila 0 (maior prioridade)
-        2. Fila 1 (prioridade média) 
-        3. Fila 2 (menor prioridade)
-        """
-        # Prioridade 1: Fila 0 (quantum pequeno)
-        if self.fila0:
+        if self.fila0: #quantum menor
             processo = self.fila0.popleft()
             processo.quantum_restante = self.quantum_fila0
             return processo
-        
-        # Prioridade 2: Fila 1 (quantum maior)  
-        if self.fila1:
+
+        if self.fila1: #quantum maior
             processo = self.fila1.popleft()
             processo.quantum_restante = self.quantum_fila1
             return processo
 
-        # Prioridade 3: Fila 2 (FCFS - sem quantum)
-        if self.fila2:
+        if self.fila2: #FCFS
             processo = self.fila2.popleft()
             processo.quantum_restante = float('inf')
             return processo
@@ -60,7 +51,6 @@ class EscalonadorMultinivel:
         return None
 
     def mover_processo_para_fila_inferior(self, processo):
-        """Move processo para fila de menor prioridade quando quantum expira"""
         if processo.fila_atual == 0:
             processo.fila_atual = 1
             self.fila1.append(processo)
@@ -70,8 +60,7 @@ class EscalonadorMultinivel:
             self.fila2.append(processo)
             self.log_execucao.append(f"T{self.tempo_atual}: Processo {processo.nome} movido para Fila 3 (quantum expirado)")
 
-    def retornar_processo_fila_original(self, processo):
-        """Retorna processo para a fila onde estava quando foi bloqueado"""
+    def retornar_processo_fila_original_apos_bloquado(self, processo):
         processo.status = 'ready'
         
         if processo.fila_atual == 0:
@@ -82,17 +71,15 @@ class EscalonadorMultinivel:
             self.fila2.append(processo)
         self.log_execucao.append(f"T{self.tempo_atual}: Processo {processo.nome} retornou do I/O para Fila {processo.fila_atual}")
 
-    def processar_bloqueados(self):
-        """Processa processos bloqueados por I/O"""
+    def processar_bloqueados_por_io(self):
         for processo in self.bloqueados[:]:
             processo.tempo_io_restante -= 1
             if processo.tempo_io_restante <= 0:
                 processo.resetar_cpu_burst()
                 self.bloqueados.remove(processo)
-                self.retornar_processo_fila_original(processo)
+                self.retornar_processo_fila_original_apos_bloquado(processo)
 
     def executar_processo(self, processo):
-        """Executa um processo por 1ms"""
         if processo.tempo_inicio is None:
             processo.tempo_inicio = self.tempo_atual
             
@@ -127,11 +114,7 @@ class EscalonadorMultinivel:
         return 'running'
 
     def verificar_preempcao(self, processo_atual):
-        """
-        Verifica se há necessidade de preempção:
-        - Fila 0 sempre preempta Filas 1 e 2
-        - Fila 1 sempre preempta Fila 2
-        """
+        
         if processo_atual is None:
             return False
             
@@ -144,18 +127,17 @@ class EscalonadorMultinivel:
         return False
 
     def executar_simulacao(self):
-        """Executa a simulação completa do escalonador multinível"""
-        print("=== INICIANDO SIMULAÇÃO DO ESCALONADOR MULTINÍVEL COM FEEDBACK ===")
+        print("=== Iniciando Simuaçãp do Escalonador Multinível===")
         print(f"Quantum Fila 0: {self.quantum_fila0}ms")
         print(f"Quantum Fila 1: {self.quantum_fila1}ms")
-        print(f"Fila 3: FCFS (sem quantum)")
+        print(f"Fila 3: FCFS")
         print("=" * 60)
 
         while (self.fila0 or self.fila1 or self.fila2 or
-               self.bloqueados or self.processo_executando):
-            
-            self.processar_bloqueados()
-            
+               self.bloqueados or self.processo_executando): #processos estão rodando
+
+            self.processar_bloqueados_por_io()
+
             if self.verificar_preempcao(self.processo_executando):
                 if self.processo_executando:
                     if self.processo_executando.fila_atual == 0:
@@ -173,7 +155,7 @@ class EscalonadorMultinivel:
             if self.processo_executando is None:
                 self.processo_executando = self.obter_proximo_processo()
             
-            if self.processo_executando:
+            if self.processo_executando: 
                 nome_processo = self.processo_executando.nome
                 resultado = self.executar_processo(self.processo_executando)
                 
@@ -191,26 +173,23 @@ class EscalonadorMultinivel:
                 todos_processos.append(self.processo_executando)
                 
             for p in todos_processos:
-                if not hasattr(p, 'linha_tempo'):
+                if not hasattr(p, 'linha_tempo'): #print bonitinho com todos os processos
                     p.linha_tempo = []
                 p.linha_tempo.append(p.status)
             
             self.tempo_atual += 1
-        
-        print("=== SIMULAÇÃO CONCLUÍDA ===")
+
+        print("=== Simulação Concluída ===")
         return self.linha_tempo_cpu
 
     def gerar_relatorio(self):
-        """Gera relatório completo da simulação"""
-        print("\n" + "="*60)
-        print("RELATÓRIO DA SIMULAÇÃO")
-        print("="*60)
-        
-        print("\n--- LINHA DO TEMPO DA CPU ---")
+        print("===== RELATÓRIO DA SIMULAÇÃO =====")
+
+        print("\n--- Linha do tempos da CPU ---")
         print("Tempo: " + " ".join([f"{i:>2}" for i in range(len(self.linha_tempo_cpu))]))
         print("CPU:   " + " ".join([f"{nome:>2}" for nome in self.linha_tempo_cpu]))
         
-        print("\n--- LINHA DO TEMPO DOS PROCESSOS ---")
+        print("\n--- Linha do tempo dos estados dos processos ---")
         estado_formatado = {
             'ready': 'R',
             'running': 'E', 
@@ -224,16 +203,15 @@ class EscalonadorMultinivel:
                 
             linha = " ".join([f"{estado_formatado.get(s, '?'):>2}" for s in p.linha_tempo])
             print(f"{p.nome}:   {linha}")
-        
-        print("\nLegenda: R=Ready, E=Executando, B=Bloqueado, F=Finalizado")
-        
-        print("\n--- ESTATÍSTICAS ---")
+
+
+        print("\n--- Estatísticas ---")
         for p in sorted(self.finalizados, key=lambda x: x.nome):
             turnaround = p.tempo_fim if p.tempo_fim else self.tempo_atual
             tempo_resposta = p.tempo_inicio if p.tempo_inicio else 0
             print(f"{p.nome}: Turnaround={turnaround}ms, Tempo de Resposta={tempo_resposta}ms")
         
-        print("\n--- LOG DE EXECUÇÃO ---")
+        print("\n--- Atividade dos processos durante a execução ---")
         for log in self.log_execucao[-20:]:
             print(log)
         

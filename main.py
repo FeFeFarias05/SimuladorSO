@@ -5,7 +5,6 @@ import json
 import sys
 
 def carregar_processos_json(arquivo):
-    """Carrega processos de um arquivo JSON"""
     try:
         with open(arquivo, 'r') as f:
             data = json.load(f)
@@ -36,7 +35,6 @@ def carregar_processos_json(arquivo):
         return None, None, None
 
 def exemplo_basico():
-    """Exemplo básico demonstrando o escalonador multinível"""
     print("EXEMPLO BÁSICO - ESCALONADOR MULTINÍVEL COM FEEDBACK")
     print("=" * 60)
     
@@ -47,7 +45,7 @@ def exemplo_basico():
         Processo('D', 0, 0, 4),   # Processo curto
     ]
     
-    print("PROCESSOS:")
+    print("Processos:")
     for p in processos:
         io_info = f"I/O: {p.tempo_io_original}ms" if p.tempo_io_original > 0 else "Sem I/O"
         print(f"  {p.nome}: CPU Burst={p.cpu_burst_original}ms, {io_info}, Total CPU={p.tempo_total_cpu}ms")
@@ -57,8 +55,7 @@ def exemplo_basico():
     escalonador.gerar_relatorio()
 
 def exemplo_quantum_pequeno():
-    """Exemplo com quantum pequeno para mostrar movimento entre filas"""
-    print("\nEXEMPLO COM QUANTUM PEQUENO - DEMONSTRA MOVIMENTO ENTRE FILAS")
+    print("\n Quantum Pequeno (movimento entre filas)")
     print("=" * 60)
     
     processos = [
@@ -66,7 +63,7 @@ def exemplo_quantum_pequeno():
         Processo('Y', 0, 0, 8),
     ]
     
-    print("PROCESSOS:")
+    print("Processos:")
     for p in processos:
         print(f"  {p.nome}: Total CPU={p.tempo_total_cpu}ms (sem I/O)")
     

@@ -24,6 +24,41 @@
       "io_time": 2,
       "total_cpu_time": 8,
       "priority": 0
+    },
+    {
+      "name": "P4",
+      "cpu_burst": 1,
+      "io_time": 3,
+      "total_cpu_time": 15,
+      "priority": 1
+    },
+    {
+      "name": "P5",
+      "cpu_burst": 4,
+      "io_time": 1,
+      "total_cpu_time": 6,
+      "priority": 2
+    },
+    {
+      "name": "P6",
+      "cpu_burst": 0,
+      "io_time": 0,
+      "total_cpu_time": 25,
+      "priority": 3
+    },
+    {
+      "name": "P7",
+      "cpu_burst": 5,
+      "io_time": 2,
+      "total_cpu_time": 7,
+      "priority": 0
+    },
+    {
+      "name": "P8",
+      "cpu_burst": 2,
+      "io_time": 6,
+      "total_cpu_time": 4,
+      "priority": 1
     }
   ]
 }

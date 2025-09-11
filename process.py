@@ -10,8 +10,7 @@ class Processo:
         self.ordem = ordem
         self.prioridade = prioridade
         
-        # Estados: 'ready', 'running', 'blocked', 'finished'
-        self.status = 'ready'
+        self.status = 'ready' #todos começam como prontos
         
         self.fila_atual = 0
         self.quantum_restante = 0
@@ -25,14 +24,12 @@ class Processo:
         self.cpu_bursts_salvos = []
 
     def resetar_cpu_burst(self):
-        """Reseta o CPU burst quando o processo retorna do I/O"""
         if self.cpu_bursts_salvos:
             self.cpu_burst_atual = self.cpu_bursts_salvos.pop(0)
         else:
             self.cpu_burst_atual = self.cpu_burst_original
 
     def salvar_cpu_burst(self):
-        """Salva o estado atual do CPU burst antes de ir para I/O"""
         if self.cpu_burst_atual > 0:
             self.cpu_bursts_salvos.append(self.cpu_burst_atual)
 
