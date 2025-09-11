@@ -21,9 +21,6 @@ Simulador de escalonamento de processos implementando o algoritmo Multinível co
 # Executar com arquivo JSON
 python main.py examples/input_example.json
 
-# Executar testes
-python test_scheduler.py
-
 # Teste de escalabilidade
 python test_escalabilidade.py
 ```
@@ -52,7 +49,6 @@ python test_escalabilidade.py
 
 - **Linha do tempo da CPU**: Qual processo executou em cada momento
 - **Estados dos processos**: R (Ready), E (Executando), B (Bloqueado), F (Finalizado)
-- **Estatísticas**: Turnaround time, tempo de resposta
 - **Log de eventos**: Movimentos entre filas, preempções, I/O
 
 ## 📁 Arquivos Principais
@@ -60,6 +56,5 @@ python test_escalabilidade.py
 - `main.py` - Programa principal
 - `process.py` - Classe Processo
 - `multilevel_scheduler.py` - Escalonador multinível
-- `test_scheduler.py` - Testes do sistema
 - `test_escalabilidade.py` - Testes de performance
 - `examples/input_example.json` - Exemplo de entrada
