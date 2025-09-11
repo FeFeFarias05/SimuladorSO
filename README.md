@@ -27,32 +27,37 @@ Este projeto implementa um simulador para escalonamento de processos em um siste
 
 ### Execução Básica
 ```bash
-python main.py
-```
-Executa exemplos demonstrativos que mostram o funcionamento do escalonador.
-
-### Execução com Arquivo JSON
-```bash
 python main.py examples/input_example.json
+```
+Executa a simulação usando o arquivo de exemplo fornecido.
+
+### Execução com Arquivo JSON Personalizado
+```bash
+python main.py caminho/para/seu/arquivo.json
 ```
 
 ### Execução dos Testes
 ```bash
-python test_scheduler.py
+# Teste progressivo com diferentes quantidades de processos
+python test_escalabilidade.py
+
+# Teste com quantidade específica de processos
+python test_escalabilidade.py 50
 ```
 
 ## 📁 Estrutura do Projeto
 
 ```
 SimuladorSO/
-├── main.py                    # Programa principal com exemplos
+├── main.py                    # Programa principal
 ├── process.py                 # Classe Processo
 ├── multilevel_scheduler.py    # Escalonador multinível
-├── test_scheduler.py          # Testes do sistema
+├── test_escalabilidade.py     # Testes de escalabilidade
 ├── examples/
 │   └── input_example.json     # Exemplo de entrada em JSON
-├── scheduler.py               # [DEPRECATED] Escalonador antigo
-└── escalonador.py            # [DEPRECATED] Escalonador antigo
+└── src/
+    └── simulador_so/          # Pacote Python (instalável)
+        └── scheduler/         # Módulos do escalonador
 ```
 
 ## 📄 Formato do Arquivo JSON
@@ -123,11 +128,18 @@ processo = Processo('B', cpu_burst=0, tempo_io=0, tempo_total_cpu=20)
 
 ## 🔍 Casos de Teste Implementados
 
+### Testes de Funcionalidade (main.py)
 1. **Teste Básico**: Mistura de processos com e sem I/O
 2. **Teste com Quantum Pequeno**: Demonstra movimento entre filas
 3. **Teste de Preempção**: Mostra prioridade entre filas
 4. **Teste com JSON**: Carregamento de configuração externa
 5. **Casos Extremos**: Quantums muito pequenos, processos longos
+
+### Testes de Escalabilidade (test_escalabilidade.py)
+1. **Teste Progressivo**: Testa com 5, 10, 25, 50, 100, 250, 500, 1000, 2000, 3000 processos
+2. **Medição de Performance**: Calcula processos processados por segundo
+3. **Tipos de Processo**: Mistura de processos CPU-intensivos e com I/O
+4. **Análise de Tempo**: Mede tempo de criação vs tempo de simulação
 
 ## ✅ Conformidade com a Especificação
 
@@ -143,6 +155,7 @@ processo = Processo('B', cpu_burst=0, tempo_io=0, tempo_total_cpu=20)
 
 ## 🐛 Observações
 
-- Os arquivos `scheduler.py` e `escalonador.py` são da implementação anterior (baseada em créditos) e foram mantidos para referência
-- O novo sistema está implementado em `multilevel_scheduler.py`
+- O sistema está implementado em `multilevel_scheduler.py`
 - Use `main.py` para demonstrações completas do funcionamento
+- O arquivo `test_escalabilidade.py` permite testar a performance com grandes quantidades de processos
+- O projeto inclui um pacote Python instalável em `src/simulador_so/`
