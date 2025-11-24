@@ -6,9 +6,9 @@ Ponto de entrada do programa
 
 import argparse
 import sys
-from config import MemoryConfig
-from simulator import MemorySimulator
-from address_generator import AddressGenerator
+from MemoryConfig import MemoryConfig
+from MemorySimulator import MemorySimulator
+from AddressGenerator import AddressGenerator
 
 
 def parse_arguments():

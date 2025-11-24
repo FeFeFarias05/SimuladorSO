@@ -3,10 +3,10 @@ Memory Management Unit (MMU)
 Responsável pela tradução de endereços virtuais para físicos
 """
 
-from tlb import TLB
-from page_table import PageTable
-from physical_memory import PhysicalMemory
-from segment_manager import SegmentManager
+from TLB import TLB
+from PageTableEntry import PageTableEntry
+from PhysicalMemory import PhysicalMemory
+from SegmentManager import SegmentManager
 
 
 class AddressTranslation:

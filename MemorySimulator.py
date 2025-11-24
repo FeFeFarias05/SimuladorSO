@@ -1,27 +1,14 @@
-"""
-Simulador de Sistema de Gerência de Memória Paginada
-Coordena todos os componentes e executa a simulação
-"""
 
 import json
 from datetime import datetime
-from config import MemoryConfig
+from MemoryConfig import MemoryConfig
 from mmu import MMU
-from address_generator import AddressGenerator
+from AddressGenerator import AddressGenerator
 
 
 class MemorySimulator:
-    """
-    Simulador principal do sistema de gerenciamento de memória
-    """
-    
     def __init__(self, config):
-        """
-        Inicializa o simulador
-        
-        Args:
-            config: Objeto MemoryConfig com a configuração do sistema
-        """
+
         self.config = config
         self.mmu = MMU(config)
         self.address_generator = AddressGenerator(config)

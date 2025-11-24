@@ -3,9 +3,9 @@ Exemplo de uso do simulador
 Demonstra como usar o simulador de diferentes formas
 """
 
-from config import MemoryConfig
-from simulator import MemorySimulator
-from address_generator import AddressGenerator
+from MemoryConfig import MemoryConfig
+from MemorySimulator import MemorySimulator
+from AddressGenerator import AddressGenerator
 
 
 def exemplo_basico():
