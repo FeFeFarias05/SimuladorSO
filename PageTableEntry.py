@@ -20,7 +20,7 @@ class PageTableEntry:
     # ------------------------------------------
     # Calcula índices por nível a partir do VPN
     # ------------------------------------------
-    def _split_vpn(self, vpn):
+    def split_vpn(self, vpn):
         indices = []
         for bits in reversed(self.bits_per_level):
             mask = (1 << bits) - 1
@@ -39,7 +39,7 @@ class PageTableEntry:
             return -1
         
         # Multi-nível
-        indices = self._split_vpn(vpn)
+        indices = self.split_vpn(vpn)
         current = self.table
 
         for i, idx in enumerate(indices):
@@ -65,7 +65,7 @@ class PageTableEntry:
             self.table[vpn] = {"valid": True, "frame": frame}
             return
         
-        indices = self._split_vpn(vpn)
+        indices = self.split_vpn(vpn)
         current = self.table
 
         for i, idx in enumerate(indices):
@@ -86,7 +86,7 @@ class PageTableEntry:
                 self.table[vpn]["frame"] = -1
             return
         
-        indices = self._split_vpn(vpn)
+        indices = self.split_vpn(vpn)
         current = self.table
 
         for i, idx in enumerate(indices):

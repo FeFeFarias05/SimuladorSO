@@ -37,7 +37,7 @@ class PhysicalMemory:
                 return i, None   # nenhuma página foi expulsa
 
         # Se chegou aqui, memória cheia → precisa substituir
-        lru_frame = self._find_lru_frame()
+        lru_frame = self.find_lru_frame()
         evicted_vpn = self.frames[lru_frame]
 
         self.frames[lru_frame] = vpn
@@ -52,7 +52,7 @@ class PhysicalMemory:
         self.access_counter += 1
         self.last_access[frame] = self.access_counter
 
-    def _find_lru_frame(self):
+    def find_lru_frame(self):
         """Retorna o índice da moldura menos recentemente acessada."""
         menor = min(self.last_access)
         return self.last_access.index(menor)

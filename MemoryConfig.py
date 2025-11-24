@@ -66,9 +66,9 @@ class MemoryConfig:
         # TABELA DE PÁGINAS
         # ------------------
         self.page_table_levels = page_table_levels
-        self._calc_bits_per_level()
+        self.calc_bits_per_level()
 
-    def _calc_bits_per_level(self):
+    def calc_bits_per_level(self):
         """Define quantos bits vão para cada nível da tabela."""
         if self.page_table_levels == 1:
             self.bits_per_level = [self.vpn_bits]

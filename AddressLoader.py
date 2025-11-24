@@ -7,7 +7,7 @@ class AddressLoader:
         if seed is not None:
             random.seed(seed)
 
-    def _parse_address(self, text):
+    def parse_address(self, text):
         text = text.strip()
 
         # Remove BOM / UTF-16 chars
@@ -32,5 +32,5 @@ class AddressLoader:
             for line in f:
                 line = line.strip()
                 if line:
-                    addrs.append(self._parse_address(line))
+                    addrs.append(self.parse_address(line))
         return addrs

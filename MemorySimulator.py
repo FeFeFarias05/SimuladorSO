@@ -14,11 +14,11 @@ class MemorySimulator:
     def run_simulation(self, input_file, output_file):
         addresses = self.generator.load(input_file)
         results = self.MMU.translate_batch(addresses)
-        self._write_output(output_file, results)
+        self.write_output(output_file, results)
 
         print(f"Simulação concluída! Saída salva em: {output_file}")
 
-    def _write_output(self, filename, translations):
+    def write_output(self, filename, translations):
         with open(filename, "w", encoding="utf-8") as f:
 
             f.write("SIMULADOR DE MEMÓRIA PAGINADA\n")
