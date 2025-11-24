@@ -6,7 +6,7 @@ Implementação simples, seguindo exatamente o que o trabalho pede.
 class PageTableEntry:
     def __init__(self, config):
         self.config = config
-        self.levels = config.page_table_levels
+        self.levels = config.niveisTabelaPagina
         self.bits_per_level = config.bits_per_level
 
         # Estrutura inicial da tabela

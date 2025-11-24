@@ -7,14 +7,14 @@ def main():
     print(f"{Colors.BOLD_BLUE}=== Simulador de um Sistema de Gerência de Memória Paginada do SO ==={Colors.RESET}")
 
     config = MemoryConfig(
-        tlb_entries_bits=2,
-        virtual_addr_bits=16,
-        physical_addr_bits=14,
-        page_size_bits=10,
-        text_size_bits=12,
-        data_size_bits=11,
-        stack_size_bits=11,
-        page_table_levels=2
+        numeroEntradaTLB=2,
+        tamanhoEspacoVirtual=16,
+        tamanhoMemoriaFisica=14,
+        tamanhoPagina=10,
+        tamanhoSegText=12,
+        tamanhoSegData=11,
+        tamanhoSegStack=11,
+        niveisTabelaPagina=2
     )
 
     print(f"{Colors.BOLD_GREEN}Configuração carregada.{Colors.RESET}\n")
