@@ -53,14 +53,14 @@ class MemoryConfig:
         self.data_size = 2 ** data_size_bits
         self.stack_size = 2 ** stack_size_bits
         
-        # Segmento .bss calculado: tamanho total dos outros segmentos * 3
-        self.bss_size = (self.text_size + self.data_size + self.stack_size) * 3
+        # Segmento .bss calculado: preenche o espaço restante
+        # Isso garante que todo o espaço de endereçamento virtual seja mapeado para algum segmento,
+        # satisfazendo o requisito de que não devem existir referências inválidas.
+        total_used = self.text_size + self.data_size + self.stack_size
+        self.bss_size = self.virtual_addr_space - total_used
         
-        # 🔥 Ajuste obrigatório do PDF:
-        # O bss nunca pode ultrapassar o espaço virtual disponível.
-        total_used_no_bss = self.text_size + self.data_size + self.stack_size
-        remaining_space = max(0, self.virtual_addr_space - total_used_no_bss)
-        self.bss_size = min(self.bss_size, remaining_space)
+        if self.bss_size < 0:
+             raise ValueError("Tamanho dos segmentos excede o espaço de endereçamento virtual")
         
         # Configuração da tabela de páginas
         self.page_table_levels = page_table_levels

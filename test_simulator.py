@@ -5,11 +5,11 @@ ou: python test_simulator.py
 """
 
 import unittest
-from config import MemoryConfig
-from tlb import TLB
-from page_table import PageTable
-from physical_memory import PhysicalMemory
-from segment_manager import SegmentManager
+from MemoryConfig import MemoryConfig
+from TLB import TLB
+from PageTableEntry import PageTable
+from PhysicalMemory import PhysicalMemory
+from SegmentManager import SegmentManager
 from mmu import MMU
 
 
@@ -121,9 +121,9 @@ class TestPhysicalMemory(unittest.TestCase):
         self.memory = PhysicalMemory(4)
 
     def test_allocate_frame(self):
-        frame, was_replacement = self.memory.allocate_frame(0x1000)
+        frame, evicted_vpn = self.memory.allocate_frame(0x1000)
         self.assertEqual(frame, 0)
-        self.assertFalse(was_replacement)
+        self.assertIsNone(evicted_vpn)
         self.assertEqual(self.memory.page_faults, 1)
 
     def test_lru_replacement(self):
@@ -134,9 +134,9 @@ class TestPhysicalMemory(unittest.TestCase):
         self.memory.update_access(2)
         self.memory.update_access(3)
 
-        frame, was_replacement = self.memory.allocate_frame(0x5000)
+        frame, evicted_vpn = self.memory.allocate_frame(0x5000)
         self.assertEqual(frame, 0)
-        self.assertTrue(was_replacement)
+        self.assertIsNotNone(evicted_vpn)
         self.assertEqual(self.memory.page_replacements, 1)
 
 

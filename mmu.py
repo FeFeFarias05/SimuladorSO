@@ -4,7 +4,7 @@ Responsável pela tradução de endereços virtuais para físicos
 """
 
 from TLB import TLB
-from PageTableEntry import PageTableEntry
+from PageTableEntry import PageTable
 from PhysicalMemory import PhysicalMemory
 from SegmentManager import SegmentManager
 

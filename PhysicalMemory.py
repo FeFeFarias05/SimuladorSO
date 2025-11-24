@@ -40,7 +40,7 @@ class PhysicalMemory:
             vpn: Número da página virtual
             
         Returns:
-            (frame_number, was_replacement)
+            (frame_number, evicted_vpn)
         """
         self.access_counter += 1
         
@@ -50,17 +50,19 @@ class PhysicalMemory:
                 self.frames[i] = vpn
                 self.last_access[i] = self.access_counter
                 self.page_faults += 1
-                return (i, False)
+                return (i, None)
         
         # Memória cheia → substituir via LRU
         lru_frame = self._find_lru_frame()
+        evicted_vpn = self.frames[lru_frame]
+        
         self.frames[lru_frame] = vpn
         self.last_access[lru_frame] = self.access_counter
         
         self.page_faults += 1
         self.page_replacements += 1
         
-        return (lru_frame, True)
+        return (lru_frame, evicted_vpn)
     
     def update_access(self, frame):
         """
