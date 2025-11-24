@@ -1,11 +1,7 @@
 """
-Programa principal do simulador de gerenciamento de memória paginada.
-Este arquivo apenas:
  - lê um arquivo de endereços virtuais
  - executa o simulador
  - salva os resultados em um arquivo de saída
-
-A geração de endereços também é possível, mas é opcional.
 """
 
 from MemoryConfig import MemoryConfig
