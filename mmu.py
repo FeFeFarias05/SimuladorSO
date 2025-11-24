@@ -1,6 +1,6 @@
 """
-Memory Management Unit (MMU)
-Responsável pela tradução de endereços virtuais para físicos
+MMU - Memory Management Unit
+Faz a tradução de endereços virtuais para endereços físicos.
 """
 
 from TLB import TLB
@@ -10,10 +10,10 @@ from SegmentManager import SegmentManager
 
 
 class AddressTranslation:
-    """Resultado de uma tradução de endereço"""
-    
-    def __init__(self, virtual_addr, physical_addr, segment, vpn, frame, offset, 
-                 tlb_hit, page_fault):
+    """Armazena as informações de uma tradução feita pela MMU."""
+
+    def __init__(self, virtual_addr, physical_addr, segment,
+        vpn, frame, offset, tlb_hit, page_fault):
         self.virtual_addr = virtual_addr
         self.physical_addr = physical_addr
         self.segment = segment
@@ -22,191 +22,107 @@ class AddressTranslation:
         self.offset = offset
         self.tlb_hit = tlb_hit
         self.page_fault = page_fault
-    
+
     def __str__(self):
-        source = "TLB" if self.tlb_hit else "Page Table"
-        fault = " [PAGE FAULT]" if self.page_fault else ""
+        origem = "TLB" if self.tlb_hit else "Page Table"
+        pf = " [PAGE FAULT]" if self.page_fault else ""
         return (f"Virtual: {self.virtual_addr:#08x} -> Physical: {self.physical_addr:#08x} "
-                f"| Segment: .{self.segment} | VPN: {self.vpn} -> Frame: {self.frame} "
-                f"| Offset: {self.offset} | Source: {source}{fault}")
+                f"| Segmento: .{self.segment} | VPN: {self.vpn} -> Frame: {self.frame} "
+                f"| Offset: {self.offset} | Origem: {origem}{pf}")
 
 
 class MMU:
-    """
-    Memory Management Unit
-    Coordena TLB, Tabela de Páginas e Memória Física para tradução de endereços
-    """
-    
+    """MMU que coordena TLB, tabela de páginas e memória física."""
+
     def __init__(self, config):
-        """
-        Inicializa a MMU
-        
-        Args:
-            config: Objeto MemoryConfig com a configuração do sistema
-        """
         self.config = config
-        # TLB: passa número de entradas
         self.tlb = TLB(config.tlb_entries)
-        self.page_table = PageTable(config)
-        # PhysicalMemory agora deve suportar retorno do vpn evicto (ou None)
+        self.page_table = PageTableEntry(config)
         self.physical_memory = PhysicalMemory(config.num_frames)
-        self.segment_manager = SegmentManager(config)
-        
-        # Histórico de traduções
-        self.translation_history = []
-    
+        self.segment_mgr = SegmentManager(config)
+        self.translations = []   # simples lista de histórico
+
     def translate(self, virtual_address):
-        """
-        Traduz um endereço virtual para físico
-        
-        Args:
-            virtual_address: Endereço virtual a traduzir
-            
-        Returns:
-            Objeto AddressTranslation com resultado da tradução
-        """
-        # Verifica se o endereço é válido (pertence a algum segmento)
-        segment = self.segment_manager.identify_segment(virtual_address)
-        if segment is None:
-            raise ValueError(f"Endereço virtual inválido: {virtual_address:#08x}")
-        
-        # Extrai VPN e offset do endereço virtual
+        """Executa a tradução de um único endereço."""
+
+        # Verifica segmento
+        seg = self.segment_mgr.identify_segment(virtual_address)
+        if seg is None:
+            raise ValueError(f"Endereço fora dos segmentos: {virtual_address:#08x}")
+
+        # Calcula VPN e offset
+        offset_mask = (1 << self.config.offset_bits) - 1
         vpn = virtual_address >> self.config.offset_bits
-        offset = virtual_address & ((1 << self.config.offset_bits) - 1)
-        
-        # Variáveis para rastrear o processo
-        tlb_hit = False
-        page_fault = False
-        frame = None
-        
-        # 1. Tenta buscar na TLB
+        offset = virtual_address & offset_mask
+
+        # Passo 1: TLB
         frame = self.tlb.lookup(vpn)
-        
-        if frame is not None:
-            # TLB hit!
-            tlb_hit = True
-            # Atualiza acesso na memória física
-            self.physical_memory.update_access(frame)
-        else:
-            # TLB miss - consulta tabela de páginas
+        tlb_hit = frame is not None
+        page_fault = False
+
+        if frame is None:
+            # Passo 2: Tabela de páginas
             frame = self.page_table.lookup(vpn)
-            
+
             if frame == -1:
-                # Page fault - precisa alocar nova moldura
+                # Page fault: precisa alocar uma moldura
                 page_fault = True
-                # IMPORTANT: passamos o VPN (não o endereço virtual)
-                # Agora allocate_frame retorna (frame_index, evicted_vpn_or_None)
                 frame, evicted_vpn = self.physical_memory.allocate_frame(vpn)
-                
-                # Se houve substituição, precisamos invalidar mapeamentos antigos
+
+                # Se substituiu página, remove mapeamentos antigos
                 if evicted_vpn is not None:
-                    # Invalidar na page table e na TLB a entrada do VPN evicto
-                    # (pode ser que o evicted_vpn já não esteja mapeado na page table, mas invalidate é idempotente)
                     self.page_table.invalidate(evicted_vpn)
-                    try:
-                        # alguns TLBs têm método invalidate; assumimos que existe
-                        self.tlb.invalidate(evicted_vpn)
-                    except AttributeError:
-                        # se a TLB usar outra API, adapta aqui (por enquanto ignoramos)
-                        pass
-                
-                # Atualiza tabela de páginas com o novo mapeamento vpn -> frame
+                    self.tlb.invalidate(evicted_vpn)
+
+                # Cria mapeamento novo
                 self.page_table.insert(vpn, frame)
             else:
-                # Página já estava mapeada; atualiza LRU na memória física
                 self.physical_memory.update_access(frame)
-            
-            # Adiciona tradução na TLB
+
+            # Atualiza TLB
             self.tlb.insert(vpn, frame)
-        
-        # Calcula endereço físico
-        physical_address = (frame << self.config.offset_bits) | offset
-        
-        # Cria objeto de tradução
-        translation = AddressTranslation(
+        else:
+            # TLB hit → atualiza LRU na memória
+            self.physical_memory.update_access(frame)
+
+        # Endereço físico
+        physical_addr = (frame << self.config.offset_bits) | offset
+
+        # Monta resultado
+        t = AddressTranslation(
             virtual_addr=virtual_address,
-            physical_addr=physical_address,
-            segment=segment,
+            physical_addr=physical_addr,
+            segment=seg,
             vpn=vpn,
             frame=frame,
             offset=offset,
             tlb_hit=tlb_hit,
             page_fault=page_fault
         )
-        
-        # Adiciona ao histórico
-        self.translation_history.append(translation)
-        
-        return translation
-    
-    def translate_batch(self, virtual_addresses):
-        """
-        Traduz múltiplos endereços virtuais
-        
-        Args:
-            virtual_addresses: Lista de endereços virtuais
-            
-        Returns:
-            Lista de objetos AddressTranslation
-        """
-        translations = []
-        for addr in virtual_addresses:
+
+        self.translations.append(t)
+        return t
+
+    def translate_batch(self, addrs):
+        """Traduz vários endereços."""
+        result = []
+        for a in addrs:
             try:
-                translation = self.translate(addr)
-                translations.append(translation)
-            except ValueError as e:
-                print(f"Erro: {e}")
-        
-        return translations
-    
+                result.append(self.translate(a))
+            except ValueError:
+                # Se o endereço for inválido, apenas ignora
+                pass
+        return result
+
     def get_statistics(self):
-        """
-        Retorna estatísticas consolidadas da MMU
-        
-        Returns:
-            Dicionário com estatísticas de todos os componentes
-        """
-        total_translations = len(self.translation_history)
-        page_faults = sum(1 for t in self.translation_history if t.page_fault)
-        
+        """Retorna estatísticas simples da MMU."""
+        total = len(self.translations)
+        faults = sum(1 for t in self.translations if t.page_fault)
+
         return {
-            'total_translations': total_translations,
-            'page_faults': page_faults,
-            'page_fault_rate': page_faults / total_translations if total_translations > 0 else 0,
-            'tlb': self.tlb.get_statistics(),
-            'physical_memory': self.physical_memory.get_statistics()
+            "total_translations": total,
+            "page_faults": faults,
+            "page_fault_rate": (faults / total) if total > 0 else 0,
+            "tlb": self.tlb.get_statistics(),
+            "physical_memory": self.physical_memory.get_statistics()
         }
-    
-    def get_state(self):
-        """
-        Retorna o estado atual de todos os componentes
-        
-        Returns:
-            Dicionário com o estado da MMU
-        """
-        return {
-            'tlb': self.tlb.to_dict(),
-            'page_table': self.page_table.to_dict(),
-            'physical_memory': self.physical_memory.to_dict(),
-            'statistics': self.get_statistics()
-        }
-    
-    def __str__(self):
-        """Representação em string da MMU"""
-        stats = self.get_statistics()
-        result = [
-            "=== Estado da MMU ===",
-            "",
-            str(self.tlb),
-            "",
-            str(self.page_table),
-            "",
-            str(self.physical_memory),
-            "",
-            "=== Estatísticas ===",
-            f"Total de traduções: {stats['total_translations']}",
-            f"Page faults: {stats['page_faults']} ({stats['page_fault_rate']:.2%})",
-            f"TLB hits: {stats['tlb']['hits']} ({stats['tlb']['hit_rate']:.2%})",
-            f"TLB misses: {stats['tlb']['misses']}",
-        ]
-        return "\n".join(result)
