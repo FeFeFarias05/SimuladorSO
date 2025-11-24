@@ -7,9 +7,6 @@ class AddressGenerator:
         if seed is not None:
             random.seed(seed)
 
-    # -------------------------
-    # Parser DEC + HEX + limpa BOM
-    # -------------------------
     def _parse_address(self, text):
         text = text.strip()
 
@@ -24,17 +21,11 @@ class AddressGenerator:
         # Decimal normal
         return int(text)
 
-    # -------------------------
-    # Salvar
-    # -------------------------
     def save(self, addresses, filename):
         with open(filename, "w", encoding="utf-8") as f:
             for a in addresses:
                 f.write(str(a) + "\n")
 
-    # -------------------------
-    # Carregar (agora com HEX)
-    # -------------------------
     def load(self, filename):
         addrs = []
         with open(filename, "r", encoding="utf-8") as f:

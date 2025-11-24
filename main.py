@@ -29,7 +29,6 @@ def main():
     print("Configuração carregada.\n")
     print(config)
 
-    # Pergunta para o usuário o arquivo de entrada
     input_file = input("Arquivo com endereços virtuais: ").strip()
     output_file = input("Arquivo de saída: ").strip()
 
