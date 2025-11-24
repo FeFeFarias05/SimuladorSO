@@ -5,6 +5,8 @@ Aqui ficam apenas os valores que definem o tamanho dos espaços,
 quantidade de páginas, tamanho de segmentos, etc.
 """
 
+from Colors import Colors
+
 class MemoryConfig:
     def __init__(
         self,
@@ -106,23 +108,23 @@ class MemoryConfig:
         seg = self.get_segment_boundaries()
 
         return f"""
-=== Configuração de Memória ===
+    {Colors.BOLD_MAGENTA}=== Configuração de Memória ==={Colors.RESET}
 
-TLB:
-  Entradas: {self.tlb_entries}
+    {Colors.BOLD_MAGENTA}TLB:{Colors.RESET}
+        Entradas: {self.tlb_entries}
 
-Memória:
-  Espaço virtual: {self.virtual_addr_space} bytes
-  Memória física: {self.physical_memory_size} bytes
-  Página: {self.page_size} bytes
+    {Colors.BOLD_MAGENTA}Memória:{Colors.RESET} 
+    Espaço virtual: {self.virtual_addr_space} bytes
+    Memória física: {self.physical_memory_size} bytes
+    Página: {self.page_size} bytes
 
-Segmentos:
-  .text  = {self.text_size} bytes  ({seg['text'][0]} até {seg['text'][1]})
-  .data  = {self.data_size} bytes  ({seg['data'][0]} até {seg['data'][1]})
-  .bss   = {self.bss_size} bytes   ({seg['bss'][0]} até {seg['bss'][1]})
-  .stack = {self.stack_size} bytes ({seg['stack'][0]} até {seg['stack'][1]})
+    {Colors.BOLD_MAGENTA}Segmentos:{Colors.RESET}
+    .text  = {self.text_size} bytes  ({seg['text'][0]} até {seg['text'][1]})
+    .data  = {self.data_size} bytes  ({seg['data'][0]} até {seg['data'][1]})
+    .bss   = {self.bss_size} bytes   ({seg['bss'][0]} até {seg['bss'][1]})
+    .stack = {self.stack_size} bytes ({seg['stack'][0]} até {seg['stack'][1]})
 
-Tabela de páginas:
-  Níveis: {self.page_table_levels}
-  Bits por nível: {self.bits_per_level}
+    {Colors.BOLD_MAGENTA}Tabela de páginas:{Colors.RESET}
+    Níveis: {self.page_table_levels}
+    Bits por nível: {self.bits_per_level}
 """

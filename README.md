@@ -12,18 +12,17 @@ py main.py entrada.txt saida.txt
 
 O arquivo `entrada.txt` contém endereços virtuais que serão usadados durante a execução. Podem ser usados valores hexadecimais e inteiros
 
-
 ## Arquivos do Projeto
 
 - **`main.py`** - Programa principal
 - **`MemoryConfig.py`** - Configurações do sistema (TLB, memória, segmentos)
 - **`MemorySimulator.py`** - Coordena a simulação
-- **`mmu.py`** - Unidade de gerenciamento de memória (MMU)
+- **`MMU.py`** - Unidade de gerenciamento de memória (MMU)
 - **`TLB.py`** - Cache de traduções (Translation Lookaside Buffer)
 - **`PageTableEntry.py`** - Tabela de páginas multi-nível (1, 2 ou 3 níveis)
 - **`PhysicalMemory.py`** - Memória física com substituição LRU
 - **`SegmentManager.py`** - Gerencia segmentos (.text, .data, .bss, .stack)
-- **`AddressGenerator.py`** - Gera e carrega endereços virtuais
+- **`AddressLoader.py`** - Gera e carrega endereços virtuais
 
 ## Funcionalidades
 

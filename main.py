@@ -6,11 +6,11 @@
 
 from MemoryConfig import MemoryConfig
 from MemorySimulator import MemorySimulator
+from Colors import Colors
 
 def main():
-    print("=== Simulador de Memória Paginada ===")
+    print(f"{Colors.BOLD_BLUE}=== Simulador de um Sistema de Gerência de Memória Paginada do SO ==={Colors.RESET}")
 
-    # Configuração padrão sugerida no trabalho
     config = MemoryConfig(
         tlb_entries_bits=2,
         virtual_addr_bits=16,
@@ -22,7 +22,7 @@ def main():
         page_table_levels=2
     )
 
-    print("Configuração carregada.\n")
+    print(f"{Colors.BOLD_GREEN}Configuração carregada.{Colors.RESET}\n")
     print(config)
 
     input_file = input("Arquivo com endereços virtuais: ").strip()

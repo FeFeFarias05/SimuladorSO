@@ -1,6 +1,6 @@
 import random
 
-class AddressGenerator:
+class AddressLoader:
     def __init__(self, config, seed=None):
         self.config = config
         self.boundaries = config.get_segment_boundaries()

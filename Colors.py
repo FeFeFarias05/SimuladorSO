@@ -1,0 +1,18 @@
+
+class Colors:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    MAGENTA = '\033[95m'
+    CYAN = '\033[96m'
+    WHITE = '\033[97m'
+    BOLD_RED = '\033[1;91m'
+    BOLD_GREEN = '\033[1;92m'
+    BOLD_YELLOW = '\033[1;93m'
+    BOLD_BLUE = '\033[1;94m'
+    BOLD_MAGENTA = '\033[1;95m'
+    BOLD_CYAN = '\033[1;96m'
+    BOLD_WHITE = '\033[1;97m'
+    RESET = '\033[0m'
+    BOLD = '\033[1m'

@@ -1,18 +1,19 @@
 import json
 from datetime import datetime
 from MemoryConfig import MemoryConfig
-from mmu import MMU
-from AddressGenerator import AddressGenerator
+from MMU import MMU
+from AddressLoader import AddressLoader
+from Colors import Colors
 
 class MemorySimulator:
     def __init__(self, config):
         self.config = config
-        self.mmu = MMU(config)
-        self.generator = AddressGenerator(config)
+        self.MMU = MMU(config)
+        self.generator = AddressLoader(config)
 
     def run_simulation(self, input_file, output_file):
         addresses = self.generator.load(input_file)
-        results = self.mmu.translate_batch(addresses)
+        results = self.MMU.translate_batch(addresses)
         self._write_output(output_file, results)
 
         print(f"Simulação concluída! Saída salva em: {output_file}")
@@ -33,7 +34,7 @@ class MemorySimulator:
             f.write("\n")
 
             f.write("=== TLB ===\n")
-            tlb_items = self.mmu.tlb.get_contents()
+            tlb_items = self.MMU.tlb.get_contents()
 
             if len(tlb_items) == 0:
                 f.write("TLB vazia\n")
@@ -43,7 +44,7 @@ class MemorySimulator:
             f.write("\n")
 
             f.write("=== TABELA DE PÁGINAS ===\n")
-            mappings = self.mmu.page_table.get_all_mappings()
+            mappings = self.MMU.page_table.get_all_mappings()
 
             if len(mappings) == 0:
                 f.write("Tabela de páginas vazia\n")
@@ -53,7 +54,7 @@ class MemorySimulator:
             f.write("\n")
 
             f.write("=== MEMÓRIA FÍSICA ===\n")
-            mem = self.mmu.physical_memory.get_contents()
+            mem = self.MMU.physical_memory.get_contents()
 
             for frame_index, vpn, last_use in mem:
                 if vpn == -1:
@@ -66,7 +67,7 @@ class MemorySimulator:
                     )
             f.write("\n")
 
-            stats = self.mmu.get_statistics()
+            stats = self.MMU.get_statistics()
 
             f.write("=== ESTATÍSTICAS ===\n")
             f.write(f"Total de traduções: {stats['total_translations']}\n")
