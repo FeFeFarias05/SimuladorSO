@@ -45,8 +45,10 @@ class MMU:
             config: Objeto MemoryConfig com a configuração do sistema
         """
         self.config = config
+        # TLB: passa número de entradas
         self.tlb = TLB(config.tlb_entries)
         self.page_table = PageTable(config)
+        # PhysicalMemory agora deve suportar retorno do vpn evicto (ou None)
         self.physical_memory = PhysicalMemory(config.num_frames)
         self.segment_manager = SegmentManager(config)
         
@@ -92,12 +94,26 @@ class MMU:
             if frame == -1:
                 # Page fault - precisa alocar nova moldura
                 page_fault = True
-                frame, was_replacement = self.physical_memory.allocate_frame(virtual_address)
+                # IMPORTANT: passamos o VPN (não o endereço virtual)
+                # Agora allocate_frame retorna (frame_index, evicted_vpn_or_None)
+                frame, evicted_vpn = self.physical_memory.allocate_frame(vpn)
                 
-                # Atualiza tabela de páginas
+                # Se houve substituição, precisamos invalidar mapeamentos antigos
+                if evicted_vpn is not None:
+                    # Invalidar na page table e na TLB a entrada do VPN evicto
+                    # (pode ser que o evicted_vpn já não esteja mapeado na page table, mas invalidate é idempotente)
+                    self.page_table.invalidate(evicted_vpn)
+                    try:
+                        # alguns TLBs têm método invalidate; assumimos que existe
+                        self.tlb.invalidate(evicted_vpn)
+                    except AttributeError:
+                        # se a TLB usar outra API, adapta aqui (por enquanto ignoramos)
+                        pass
+                
+                # Atualiza tabela de páginas com o novo mapeamento vpn -> frame
                 self.page_table.insert(vpn, frame)
             else:
-                # Página já estava mapeada
+                # Página já estava mapeada; atualiza LRU na memória física
                 self.physical_memory.update_access(frame)
             
             # Adiciona tradução na TLB
