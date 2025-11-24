@@ -1,8 +1,3 @@
-"""
- - lê um arquivo de endereços virtuais
- - executa o simulador
- - salva os resultados em um arquivo de saída
-"""
 
 from MemoryConfig import MemoryConfig
 from MemorySimulator import MemorySimulator
@@ -25,19 +20,19 @@ def main():
     print(f"{Colors.BOLD_GREEN}Configuração carregada.{Colors.RESET}\n")
     print(config)
 
-    input_file = input("Arquivo com endereços virtuais: ").strip()
-    output_file = input("Arquivo de saída: ").strip()
+    input_file = input("Arquivo com os endereços virtuais: ").strip()
+    output_file = input("Arquivo de saída (saida.txt): ").strip()
 
-    sim = MemorySimulator(config)
+    simulator = MemorySimulator(config)
 
     try:
-        sim.run_simulation(input_file, output_file)
-        print("\nSimulação concluída!")
+        simulator.run_simulation(input_file, output_file)
+        print(f"{Colors.BOLD_GREEN}\nSimulação concluída!{Colors.RESET}")
         print(f"Resultados salvos em: {output_file}")
     except FileNotFoundError:
-        print("Erro: arquivo de entrada não encontrado.")
+        print(f"{Colors.BOLD_RED}Erro: arquivo de entrada não encontrado.{Colors.RESET}")
     except ValueError as e:
-        print(f"Erro de configuração: {e}")
+        print(f"{Colors.BOLD_RED}Erro de configuração: {e}{Colors.RESET}")
 
 if __name__ == "__main__":
     main()
