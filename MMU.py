@@ -36,7 +36,7 @@ class MMU:
 
     def __init__(self, config):
         self.config = config
-        self.tlb = TLB(config.tlb_entries)
+        self.tlb = TLB(config.tlb_entradas)
         self.page_table = PageTableEntry(config)
         self.physical_memory = PhysicalMemory(config.num_frames)
         self.segment_mgr = SegmentManager(config)

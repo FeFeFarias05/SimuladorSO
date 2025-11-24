@@ -30,7 +30,7 @@ class MemoryConfig:
         # CONFIGURAÇÃO DA TLB
         # ------------------
         self.numeroEntradaTLB = numeroEntradaTLB
-        self.tlb_entries = 2 ** numeroEntradaTLB
+        self.tlb_entradas = 2 ** numeroEntradaTLB
 
         # ------------------
         # CONFIGURAÇÃO DA MEMÓRIA
@@ -66,7 +66,7 @@ class MemoryConfig:
         # TABELA DE PÁGINAS
         # ------------------
         self.niveisTabelaPagina = niveisTabelaPagina
-        self._calc_bits_per_level()
+        self.calc_bits_per_level()
 
     def calc_bits_per_level(self):
         """Define quantos bits vão para cada nível da tabela."""
@@ -111,7 +111,7 @@ class MemoryConfig:
     {Colors.BOLD_MAGENTA}=== Configuração de Memória ==={Colors.RESET}
 
     {Colors.BOLD_MAGENTA}TLB:{Colors.RESET}
-        Entradas: {self.tlb_entries}
+        Entradas: {self.tlb_entradas}
 
     {Colors.BOLD_MAGENTA}Memória:{Colors.RESET} 
     Espaço virtual: {self.virtual_addr_space} bytes
