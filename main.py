@@ -9,7 +9,7 @@ def main():
         numeroEntradaTLB=2,
         tamanhoEspacoVirtual=16,
         bitsMemoriaFisica=14,
-        tamanhoPagina=10,
+        tamanhoPaginaBits=10,
         tamanhoSegText=12,
         tamanhoSegData=11,
         tamanhoSegStack=11,

@@ -4,7 +4,7 @@ class MemoryConfig:
     def __init__( self, numeroEntradaTLB=2,
     tamanhoEspacoVirtual=16,
     bitsMemoriaFisica=14,
-    tamanhoPagina=10, 
+    tamanhoPaginaBits=10, 
     tamanhoSegText=12, 
     tamanhoSegData=11, 
     tamanhoSegStack=11, 
@@ -18,14 +18,14 @@ class MemoryConfig:
         self.tlb_entradas = 2 ** numeroEntradaTLB 
         self.tamanhoEspacoVirtual = tamanhoEspacoVirtual
         self.bitsMemoriaFisica = bitsMemoriaFisica
-        self.tamanhoPagina = tamanhoPagina 
+        self.tamanhoPaginaBits = tamanhoPaginaBits 
         self.tamEspacoEnderecamentoVirtual = 2 ** tamanhoEspacoVirtual 
         self.tamMemoriaFisica = 2 ** bitsMemoriaFisica
-        self.tamPagina = 2 ** tamanhoPagina 
+        self.tamPagina = 2 ** tamanhoPaginaBits 
         self.numPaginasVirtuais = self.tamEspacoEnderecamentoVirtual // self.tamPagina 
         self.numFrames = self.tamMemoriaFisica // self.tamPagina 
-        self.offsetBits = tamanhoPagina 
-        self.vpnBits = tamanhoEspacoVirtual - tamanhoPagina 
+        self.offsetBits = tamanhoPaginaBits 
+        self.vpnBits = tamanhoEspacoVirtual - tamanhoPaginaBits 
         self.tamText = 2 ** tamanhoSegText 
         self.tamData = 2 ** tamanhoSegData 
         self.tamStack = 2 ** tamanhoSegStack 
