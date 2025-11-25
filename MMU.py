@@ -81,8 +81,7 @@ class MMU:
         self.traducoes.append(traducao)
         return traducao
 
-    def traduzirLote(self, enderecos):
-        """Traduz vários endereços."""
+    def traduzirEnderecos(self, enderecos):
         resultado = []
         for endereco in enderecos:
             try:
@@ -92,7 +91,6 @@ class MMU:
         return resultado
 
     def getEstatisticas(self):
-        """Retorna estatísticas simples da MMU."""
         total = len(self.traducoes)
         faults = sum(1 for traducao in self.traducoes if traducao.pageFault)
 

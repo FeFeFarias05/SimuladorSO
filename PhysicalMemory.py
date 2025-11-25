@@ -9,7 +9,6 @@ class PhysicalMemory:
 
         self.contadorAcessos = 0
 
-        # Estatísticas
         self.pageFaults = 0
         self.page_replacements = 0
 

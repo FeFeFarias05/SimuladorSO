@@ -1,6 +1,4 @@
-import json
 from datetime import datetime
-from MemoryConfig import MemoryConfig
 from MMU import MMU
 from AddressLoader import AddressLoader
 
@@ -12,7 +10,7 @@ class MemorySimulator:
 
     def run_simulation(self, input_file, output_file):
         enderecos = self.generator.carregar(input_file)
-        resultados = self.MMU.traduzirLote(enderecos)
+        resultados = self.MMU.traduzirEnderecos(enderecos)
         self.write_output(output_file, resultados)
 
         print(f"Simulação concluída! Saída salva em: {output_file}")
