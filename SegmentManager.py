@@ -9,4 +9,4 @@ class SegmentManager:
         return None
 
     def enderecoValido(self, endereco):
-        return self.identificar_segmento(endereco) is not None
+        return self.identificarSegmento(endereco) is not None

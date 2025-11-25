@@ -34,7 +34,7 @@ class MMU:
         self.traducoes = []  
 
     def traduzir(self, enderecoVirtual):
-        seg = self.gerenciadorSegmentos.identificar_segmento(enderecoVirtual)
+        seg = self.gerenciadorSegmentos.identificarSegmento(enderecoVirtual)
         if seg is None:
             raise ValueError(f"Endereço fora dos segmentos: {enderecoVirtual:#08x}")
 

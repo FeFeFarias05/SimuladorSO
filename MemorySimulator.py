@@ -12,7 +12,7 @@ class MemorySimulator:
 
     def run_simulation(self, input_file, output_file):
         enderecos = self.generator.carregar(input_file)
-        resultados = self.MMU.translate_batch(enderecos)
+        resultados = self.MMU.traduzirLote(enderecos)
         self.write_output(output_file, resultados)
 
         print(f"Simulação concluída! Saída salva em: {output_file}")
@@ -33,49 +33,49 @@ class MemorySimulator:
             f.write("\n")
 
             f.write("=== TLB ===\n")
-            tlb_items = self.MMU.tlb.getEntradasTLB()
+            tlbItems = self.MMU.tlb.getEntradasTLB()
 
-            if len(tlb_items) == 0:
+            if len(tlbItems) == 0:
                 f.write("TLB vazia\n")
             else:
-                for vpn, frame in tlb_items:
+                for vpn, frame in tlbItems:
                     f.write(f"VPN {vpn} -> Frame {frame}\n")
             f.write("\n")
 
             f.write("=== TABELA DE PÁGINAS ===\n")
-            mappings = self.MMU.page_table.get_all_mappings()
+            mapeamentos = self.MMU.tabelaPaginas.getMapeamentos()
 
-            if len(mappings) == 0:
+            if len(mapeamentos) == 0:
                 f.write("Tabela de páginas vazia\n")
             else:
-                for vpn, frame in mappings:
+                for vpn, frame in mapeamentos:
                     f.write(f"VPN {vpn} -> Frame {frame}\n")
             f.write("\n")
 
             f.write("=== MEMÓRIA FÍSICA ===\n")
-            mem = self.MMU.physical_memory.get_contents()
+            mem = self.MMU.memoriaFisica.getConteudo()
 
-            for frame_index, vpn, last_use in mem:
+            for frameIndex, vpn, last_use in mem:
                 if vpn == -1:
-                    f.write(f"Frame {frame_index}: livre\n")
+                    f.write(f"Frame {frameIndex}: livre\n")
                 else:
                     base_virtual = vpn * self.config.tamPagina
                     f.write(
-                        f"Frame {frame_index}: VPN {vpn} "
+                        f"Frame {frameIndex}: VPN {vpn} "
                         f"(base virtual 0x{base_virtual:04x})\n"
                     )
             f.write("\n")
 
-            stats = self.MMU.getEstatisticas()
+            estatisticas = self.MMU.getEstatisticas()
 
             f.write("=== ESTATÍSTICAS ===\n")
-            f.write(f"Total de traduções: {stats['total_traducoes']}\n")
-            f.write(f"Page faults: {stats['pageFaults']}\n")
-            f.write(f"TLB hits: {stats['tlb']['hits']}\n")
-            f.write(f"TLB misses: {stats['tlb']['misses']}\n")
+            f.write(f"Total de traduções: {estatisticas['totalTraducoes']}\n")
+            f.write(f"Page faults: {estatisticas['pageFaults']}\n")
+            f.write(f"TLB hits: {estatisticas['tlb']['hits']}\n")
+            f.write(f"TLB misses: {estatisticas['tlb']['misses']}\n")
             f.write(
-                f"Molduras usadas: {stats['physical_memory']['used_frames']} "
-                f"de {stats['physical_memory']['total_frames']}\n"
+                f"Molduras usadas: {estatisticas['memoriaFisica']['used_frames']} "
+                f"de {estatisticas['memoriaFisica']['total_frames']}\n"
             )
             f.write("\n")
 

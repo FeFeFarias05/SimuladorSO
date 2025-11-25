@@ -14,17 +14,16 @@ class MemoryConfig:
             raise ValueError("Memória física não pode ser maior que o espaço virtual") 
         if niveisTabelaPagina not in [1, 2, 3]: 
             raise ValueError("A tabela de páginas deve ter 1, 2 ou 3 níveis.")
-         
         self.numeroEntradaTLB = numeroEntradaTLB 
         self.tlb_entradas = 2 ** numeroEntradaTLB 
         self.tamanhoEspacoVirtual = tamanhoEspacoVirtual
-        self.bitsMemoriaFisica = bitsMemoriaFisica 
+        self.bitsMemoriaFisica = bitsMemoriaFisica
         self.tamanhoPagina = tamanhoPagina 
         self.tamEspacoEnderecamentoVirtual = 2 ** tamanhoEspacoVirtual 
-        self.tamanhoMemoriaFisica = 2 ** bitsMemoriaFisica 
+        self.tamMemoriaFisica = 2 ** bitsMemoriaFisica
         self.tamPagina = 2 ** tamanhoPagina 
         self.numPaginasVirtuais = self.tamEspacoEnderecamentoVirtual // self.tamPagina 
-        self.numFrames = self.tamanhoMemoriaFisica // self.tamPagina 
+        self.numFrames = self.tamMemoriaFisica // self.tamPagina 
         self.offsetBits = tamanhoPagina 
         self.vpnBits = tamanhoEspacoVirtual - tamanhoPagina 
         self.tamText = 2 ** tamanhoSegText 
@@ -74,7 +73,7 @@ class MemoryConfig:
 
     Memória: 
     Espaço virtual: {self.tamEspacoEnderecamentoVirtual} bytes
-    Memória física: {self.tamanhoMemoriaFisica} bytes
+    Memória física: {self.tamMemoriaFisica} bytes
     Página: {self.tamPagina} bytes
 
     Segmentos:

@@ -5,7 +5,7 @@ Simulador de sistema de gerenciamento de memória paginada para Sistemas Operaci
 ## Como Usar
 
 ```bash
-py main.py entrada.txt saida.txt
+py main.py
 ```
 
 ## Arquivo de Entrada

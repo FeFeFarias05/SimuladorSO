@@ -6,21 +6,13 @@ Implementação simples, seguindo exatamente o que o trabalho pede.
 class PageTableEntry:
     def __init__(self, config):
         self.config = config
-        self.levels = config.niveisTabelaPagina
+        self.niveis = config.niveisTabelaPagina
         self.bitsPorNivel = config.bitsPorNivel
+        self.tabela = {}
 
-        # Estrutura inicial da tabela
-        if self.levels == 1:
-            # vetor simples de VPN -> frame
-            self.table = {}
-        else:
-            # dicionário que aponta para outros níveis
-            self.table = {}
 
-    # ------------------------------------------
-    # Calcula índices por nível a partir do VPN
-    # ------------------------------------------
-    def split_vpn(self, vpn):
+
+    def splitVpn(self, vpn):
         indices = []
         for bits in reversed(self.bitsPorNivel):
             mask = (1 << bits) - 1
@@ -28,115 +20,101 @@ class PageTableEntry:
             vpn >>= bits
         return list(reversed(indices))
 
-    # ------------------------------------------
-    # Buscar frame
-    # ------------------------------------------
-    def lookup(self, vpn):
-        if self.levels == 1:
-            entry = self.table.get(vpn)
-            if entry and entry["valid"]:
-                return entry["frame"]
+    def buscar(self, vpn):
+        if self.niveis == 1:
+            entrada = self.tabela.get(vpn)
+            if entrada and entrada["valid"]:
+                return entrada["frame"]
             return -1
         
-        # Multi-nível
-        indices = self.split_vpn(vpn)
-        current = self.table
+        indices = self.splitVpn(vpn)
+        atual = self.tabela
 
         for i, idx in enumerate(indices):
-            if idx not in current:
+            if idx not in atual:
                 return -1
 
-            if i == self.levels - 1:
-                entry = current[idx]
-                if entry.get("valid", False):
-                    return entry["frame"]
+            if i == self.niveis - 1:
+                entrada = atual[idx]
+                if entrada.get("valid", False):
+                    return entrada["frame"]
                 return -1
 
-            # avançar nível
-            current = current[idx].get("next", {})
+            atual = atual[idx].get("next", {})
 
         return -1
 
-    # ------------------------------------------
-    # Inserir novo mapeamento VPN -> Frame
-    # ------------------------------------------
+
     def inserir(self, vpn, frame):
-        if self.levels == 1:
-            self.table[vpn] = {"valid": True, "frame": frame}
+        if self.niveis == 1:
+            self.tabela[vpn] = {"valid": True, "frame": frame}
             return
         
-        indices = self.split_vpn(vpn)
-        current = self.table
+        indices = self.splitVpn(vpn)
+        atual = self.tabela
 
         for i, idx in enumerate(indices):
-            if i == self.levels - 1:
-                current[idx] = {"valid": True, "frame": frame}
+            if i == self.niveis - 1:
+                atual[idx] = {"valid": True, "frame": frame}
             else:
-                if idx not in current:
-                    current[idx] = {"next": {}}
-                current = current[idx]["next"]
+                if idx not in atual:
+                    atual[idx] = {"next": {}}
+                atual = atual[idx]["next"]
 
-    # ------------------------------------------
-    # Invalidar VPN
-    # ------------------------------------------
+
     def remover(self, vpn):
-        if self.levels == 1:
-            if vpn in self.table:
-                self.table[vpn]["valid"] = False
-                self.table[vpn]["frame"] = -1
+        if self.niveis == 1:
+            if vpn in self.tabela:
+                self.tabela[vpn]["valid"] = False
+                self.tabela[vpn]["frame"] = -1
             return
         
-        indices = self.split_vpn(vpn)
-        current = self.table
+        indices = self.splitVpn(vpn)
+        atual = self.tabela
 
         for i, idx in enumerate(indices):
-            if idx not in current:
+            if idx not in atual:
                 return
 
-            if i == self.levels - 1:
-                current[idx]["valid"] = False
-                current[idx]["frame"] = -1
+            if i == self.niveis - 1:
+                atual[idx]["valid"] = False
+                atual[idx]["frame"] = -1
             else:
-                current = current[idx].get("next", {})
+                atual = atual[idx].get("next", {})
 
-    # ------------------------------------------
-    # Listar todos os mapeamentos válidos
-    # ------------------------------------------
-    def get_all_mappings(self):
-        mappings = []
+ 
+    def getMapeamentos(self):
+        mapeamentos = []
 
-        if self.levels == 1:
-            for vpn, entry in self.table.items():
-                if entry.get("valid", False):
-                    mappings.append((vpn, entry["frame"]))
-            return sorted(mappings)
+        if self.niveis == 1:
+            for vpn, entrada in self.tabela.items():
+                if entrada.get("valid", False):
+                    mapeamentos.append((vpn, entrada["frame"]))
+            return sorted(mapeamentos)
 
-        # recursão: current = dict do nível atual, level índice (0..levels-1), acc é VPN parcial
-        def walk(current, level, acc):
+        def caminhar(atual, level, acc):
             bits = self.bitsPorNivel[level]
-            if level == self.levels - 1:
-                # último nível: cada chave é índice do último nível e tem 'valid'/'frame'
-                for idx, node in current.items():
+            if level == self.niveis - 1:
+                for idx, node in atual.items():
                     if node.get("valid", False):
                         vpn = (acc << bits) | idx
-                        mappings.append((vpn, node["frame"]))
+                        mapeamentos.append((vpn, node["frame"]))
             else:
-                # nível intermediário
-                for idx, node in current.items():
+                for idx, node in atual.items():
                     nxt = node.get("next")
                     if nxt is not None:
-                        walk(nxt, level + 1, (acc << bits) | idx)
+                        caminhar(nxt, level + 1, (acc << bits) | idx)
 
-        walk(self.table, 0, 0)
-        return sorted(mappings)
+        caminhar(self.tabela, 0, 0)
+        return sorted(mapeamentos)
 
 
     def __str__(self):
-        lines = [f"Tabela de Páginas ({self.levels} níveis)"]
-        mappings = self.get_all_mappings()
-        if not mappings:
+        lines = [f"Tabela de Páginas ({self.niveis} níveis)"]
+        mapeamentos = self.getMapeamentos()
+        if not mapeamentos:
             lines.append("  [vazia]")
         else:
-            for vpn, frame in mappings:
+            for vpn, frame in mapeamentos:
                 lines.append(f"  VPN {vpn} -> Frame {frame}")
         return "\n".join(lines)
