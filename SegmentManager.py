@@ -1,21 +1,12 @@
-"""
-Gerenciador simples de segmentos de memória.
-Somente identifica em qual segmento um endereço virtual está.
-"""
-
 class SegmentManager:
     def __init__(self, config):
-        self.boundaries = config.get_segment_boundaries()
+        self.limites = config.getLimitesSegmentos()
 
-    def identify_segment(self, addr):
-        """
-        Retorna o segmento (.text, .data, .bss, .stack)
-        ou None se o endereço for inválido.
-        """
-        for seg, (start, end) in self.boundaries.items():
-            if start <= addr <= end:
+    def identificarSegmento(self, endereco):
+        for seg, (inicio, fim) in self.limites.items():
+            if inicio <= endereco <= fim:
                 return seg
         return None
 
-    def is_valid_address(self, addr):
-        return self.identify_segment(addr) is not None
+    def enderecoValido(self, endereco):
+        return self.identificar_segmento(endereco) is not None

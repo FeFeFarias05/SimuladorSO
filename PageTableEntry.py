@@ -7,7 +7,7 @@ class PageTableEntry:
     def __init__(self, config):
         self.config = config
         self.levels = config.niveisTabelaPagina
-        self.bits_per_level = config.bits_per_level
+        self.bitsPorNivel = config.bitsPorNivel
 
         # Estrutura inicial da tabela
         if self.levels == 1:
@@ -22,7 +22,7 @@ class PageTableEntry:
     # ------------------------------------------
     def split_vpn(self, vpn):
         indices = []
-        for bits in reversed(self.bits_per_level):
+        for bits in reversed(self.bitsPorNivel):
             mask = (1 << bits) - 1
             indices.append(vpn & mask)
             vpn >>= bits
@@ -60,7 +60,7 @@ class PageTableEntry:
     # ------------------------------------------
     # Inserir novo mapeamento VPN -> Frame
     # ------------------------------------------
-    def insert(self, vpn, frame):
+    def inserir(self, vpn, frame):
         if self.levels == 1:
             self.table[vpn] = {"valid": True, "frame": frame}
             return
@@ -79,7 +79,7 @@ class PageTableEntry:
     # ------------------------------------------
     # Invalidar VPN
     # ------------------------------------------
-    def invalidate(self, vpn):
+    def remover(self, vpn):
         if self.levels == 1:
             if vpn in self.table:
                 self.table[vpn]["valid"] = False
@@ -113,7 +113,7 @@ class PageTableEntry:
 
         # recursão: current = dict do nível atual, level índice (0..levels-1), acc é VPN parcial
         def walk(current, level, acc):
-            bits = self.bits_per_level[level]
+            bits = self.bitsPorNivel[level]
             if level == self.levels - 1:
                 # último nível: cada chave é índice do último nível e tem 'valid'/'frame'
                 for idx, node in current.items():

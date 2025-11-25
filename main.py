@@ -9,7 +9,7 @@ def main():
     config = MemoryConfig(
         numeroEntradaTLB=2,
         tamanhoEspacoVirtual=16,
-        tamanhoMemoriaFisica=14,
+        bitsMemoriaFisica=14,
         tamanhoPagina=10,
         tamanhoSegText=12,
         tamanhoSegData=11,
@@ -20,15 +20,15 @@ def main():
     print(f"{Colors.BOLD_GREEN}Configuração carregada.{Colors.RESET}\n")
     print(config)
 
-    input_file = input("Arquivo com os endereços virtuais: ").strip()
-    output_file = input("Arquivo de saída (saida.txt): ").strip()
+    inputFile = input("Arquivo com os endereços virtuais: ").strip()
+    outputFile = input("Arquivo de saída (saida.txt): ").strip()
 
-    simulator = MemorySimulator(config)
+    simulador = MemorySimulator(config)
 
     try:
-        simulator.run_simulation(input_file, output_file)
+        simulador.run_simulation(inputFile, outputFile)
         print(f"{Colors.BOLD_GREEN}\nSimulação concluída!{Colors.RESET}")
-        print(f"Resultados salvos em: {output_file}")
+        print(f"Resultados salvos em: {outputFile}")
     except FileNotFoundError:
         print(f"{Colors.BOLD_RED}Erro: arquivo de entrada não encontrado.{Colors.RESET}")
     except ValueError as e:

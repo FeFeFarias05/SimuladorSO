@@ -1,52 +1,54 @@
 SIMULADOR DE MEMÓRIA PAGINADA
-Data: 2025-11-24 00:46:22.963720
+Data: 2025-11-25 00:31:03.395735
 
 === CONFIGURAÇÃO ===
 
-=== Configuração de Memória ===
+    [1;95m=== Configuração de Memória ===[0m
 
-TLB:
-  Entradas: 4
+    [1;95mTLB:[0m
+        Entradas: 4
 
-Memória:
-  Espaço virtual: 65536 bytes
-  Memória física: 16384 bytes
-  Página: 1024 bytes
+    [1;95mMemória:[0m 
+    Espaço virtual: 65536 bytes
+    Memória física: 16384 bytes
+    Página: 1024 bytes
 
-Segmentos:
-  .text  = 4096 bytes  (0 até 4095)
-  .data  = 2048 bytes  (4096 até 6143)
-  .bss   = 8192 bytes   (6144 até 14335)
-  .stack = 2048 bytes (63488 até 65535)
+    [1;95mSegmentos:[0m
+    .text  = 4096 bytes  (0 até 4095)
+    .data  = 2048 bytes  (4096 até 6143)
+    .bss   = 8192 bytes   (6144 até 14335)
+    .stack = 2048 bytes (63488 até 65535)
 
-Tabela de páginas:
-  Níveis: 2
-  Bits por nível: [3, 3]
+    [1;95mTabela de páginas:[0m
+    Níveis: 2
+    Bits por nível: [3, 3]
 
 === TRADUÇÕES ===
 1. Virtual: 0x000000 -> Physical: 0x000000 | Segmento: .text | VPN: 0 -> Frame: 0 | Offset: 0 | Origem: Page Table [PAGE FAULT]
-2. Virtual: 0x000400 -> Physical: 0x000400 | Segmento: .text | VPN: 1 -> Frame: 1 | Offset: 0 | Origem: Page Table [PAGE FAULT]
-3. Virtual: 0x001000 -> Physical: 0x000800 | Segmento: .data | VPN: 4 -> Frame: 2 | Offset: 0 | Origem: Page Table [PAGE FAULT]
-4. Virtual: 0x002000 -> Physical: 0x000c00 | Segmento: .bss | VPN: 8 -> Frame: 3 | Offset: 0 | Origem: Page Table [PAGE FAULT]
-5. Virtual: 0x00000d -> Physical: 0x00000d | Segmento: .text | VPN: 0 -> Frame: 0 | Offset: 13 | Origem: TLB
+2. Virtual: 0x000080 -> Physical: 0x000080 | Segmento: .text | VPN: 0 -> Frame: 0 | Offset: 128 | Origem: TLB
+3. Virtual: 0x000200 -> Physical: 0x000200 | Segmento: .text | VPN: 0 -> Frame: 0 | Offset: 512 | Origem: TLB
+4. Virtual: 0x0003ff -> Physical: 0x0003ff | Segmento: .text | VPN: 0 -> Frame: 0 | Offset: 1023 | Origem: TLB
+5. Virtual: 0x000800 -> Physical: 0x000400 | Segmento: .text | VPN: 2 -> Frame: 1 | Offset: 0 | Origem: Page Table [PAGE FAULT]
+6. Virtual: 0x000dac -> Physical: 0x0009ac | Segmento: .text | VPN: 3 -> Frame: 2 | Offset: 428 | Origem: Page Table [PAGE FAULT]
+7. Virtual: 0x000fff -> Physical: 0x000bff | Segmento: .text | VPN: 3 -> Frame: 2 | Offset: 1023 | Origem: TLB
+8. Virtual: 0x00000a -> Physical: 0x00000a | Segmento: .text | VPN: 0 -> Frame: 0 | Offset: 10 | Origem: TLB
+9. Virtual: 0x0003ff -> Physical: 0x0003ff | Segmento: .text | VPN: 0 -> Frame: 0 | Offset: 1023 | Origem: TLB
 
 === TLB ===
 VPN 0 -> Frame 0
-VPN 1 -> Frame 1
-VPN 4 -> Frame 2
-VPN 8 -> Frame 3
+VPN 2 -> Frame 1
+VPN 3 -> Frame 2
 
 === TABELA DE PÁGINAS ===
 VPN 0 -> Frame 0
-VPN 1 -> Frame 1
-VPN 4 -> Frame 2
-VPN 8 -> Frame 3
+VPN 2 -> Frame 1
+VPN 3 -> Frame 2
 
 === MEMÓRIA FÍSICA ===
 Frame 0: VPN 0 (base virtual 0x0000)
-Frame 1: VPN 1 (base virtual 0x0400)
-Frame 2: VPN 4 (base virtual 0x1000)
-Frame 3: VPN 8 (base virtual 0x2000)
+Frame 1: VPN 2 (base virtual 0x0800)
+Frame 2: VPN 3 (base virtual 0x0c00)
+Frame 3: livre
 Frame 4: livre
 Frame 5: livre
 Frame 6: livre
@@ -61,9 +63,9 @@ Frame 14: livre
 Frame 15: livre
 
 === ESTATÍSTICAS ===
-Total de traduções: 5
-Page faults: 4
-TLB hits: 1
-TLB misses: 4
-Molduras usadas: 4 de 16
+Total de traduções: 9
+Page faults: 3
+TLB hits: 6
+TLB misses: 3
+Molduras usadas: 3 de 16
 

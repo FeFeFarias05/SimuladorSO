@@ -1,20 +1,11 @@
-"""
-Implementação simples de uma TLB (Translation Lookaside Buffer).
-Segue o enunciado: FIFO, hits/misses e armazenamento de VPN -> frame.
-"""
-
 class TLB:
     def __init__(self, max_entradas):
         self.max_entradas = max_entradas
-        self.entradas = []          # lista de (vpn, frame)
+        self.entradas = []       
         self.hits = 0
         self.misses = 0
 
-    def lookup(self, vpn):
-        """
-        Procura o VPN na TLB.
-        Retorna o frame ou None.
-        """
+    def buscarVPN(self, vpn):
         for v, f in self.entradas:
             if v == vpn:
                 self.hits += 1
@@ -23,29 +14,21 @@ class TLB:
         self.misses += 1
         return None
 
-    def insert(self, vpn, frame):
-        """
-        Insere uma nova tradução.
-        Se já existe, atualiza posição.
-        Se está cheia, remove o mais antigo (FIFO).
-        """
-        # remover caso já exista
+    def inserir(self, vpn, frame):
         self.entradas = [(v, f) for (v, f) in self.entradas if v != vpn]
 
-        # substituir via FIFO
         if len(self.entradas) >= self.max_entradas:
             self.entradas.pop(0)
 
         self.entradas.append((vpn, frame))
 
-    def invalidate(self, vpn):
-        """Remove VPN da TLB (se existir)."""
+    def remover(self, vpn):
         self.entradas = [(v, f) for (v, f) in self.entradas if v != vpn]
 
-    def get_contents(self):
+    def getEntradasTLB(self):
         return list(self.entradas)
 
-    def get_statistics(self):
+    def getEstatisticas(self):
         total = self.hits + self.misses
         hit_rate = self.hits / total if total > 0 else 0.0
         return {

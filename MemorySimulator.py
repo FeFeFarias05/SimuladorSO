@@ -3,7 +3,6 @@ from datetime import datetime
 from MemoryConfig import MemoryConfig
 from MMU import MMU
 from AddressLoader import AddressLoader
-from Colors import Colors
 
 class MemorySimulator:
     def __init__(self, config):
@@ -12,14 +11,14 @@ class MemorySimulator:
         self.generator = AddressLoader(config)
 
     def run_simulation(self, input_file, output_file):
-        addresses = self.generator.load(input_file)
-        results = self.MMU.translate_batch(addresses)
-        self.write_output(output_file, results)
+        enderecos = self.generator.carregar(input_file)
+        resultados = self.MMU.translate_batch(enderecos)
+        self.write_output(output_file, resultados)
 
         print(f"Simulação concluída! Saída salva em: {output_file}")
 
-    def write_output(self, filename, translations):
-        with open(filename, "w", encoding="utf-8") as f:
+    def write_output(self, nomeArquivo, traducoes):
+        with open(nomeArquivo, "w", encoding="utf-8") as f:
 
             f.write("SIMULADOR DE MEMÓRIA PAGINADA\n")
             f.write(f"Data: {datetime.now()}\n\n")
@@ -29,12 +28,12 @@ class MemorySimulator:
             f.write("\n")
 
             f.write("=== TRADUÇÕES ===\n")
-            for i, t in enumerate(translations, start=1):
+            for i, t in enumerate(traducoes, start=1):
                 f.write(f"{i}. {t}\n")
             f.write("\n")
 
             f.write("=== TLB ===\n")
-            tlb_items = self.MMU.tlb.get_contents()
+            tlb_items = self.MMU.tlb.getEntradasTLB()
 
             if len(tlb_items) == 0:
                 f.write("TLB vazia\n")
@@ -60,18 +59,18 @@ class MemorySimulator:
                 if vpn == -1:
                     f.write(f"Frame {frame_index}: livre\n")
                 else:
-                    base_virtual = vpn * self.config.page_size
+                    base_virtual = vpn * self.config.tamPagina
                     f.write(
                         f"Frame {frame_index}: VPN {vpn} "
                         f"(base virtual 0x{base_virtual:04x})\n"
                     )
             f.write("\n")
 
-            stats = self.MMU.get_statistics()
+            stats = self.MMU.getEstatisticas()
 
             f.write("=== ESTATÍSTICAS ===\n")
-            f.write(f"Total de traduções: {stats['total_translations']}\n")
-            f.write(f"Page faults: {stats['page_faults']}\n")
+            f.write(f"Total de traduções: {stats['total_traducoes']}\n")
+            f.write(f"Page faults: {stats['pageFaults']}\n")
             f.write(f"TLB hits: {stats['tlb']['hits']}\n")
             f.write(f"TLB misses: {stats['tlb']['misses']}\n")
             f.write(
