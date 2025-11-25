@@ -1,10 +1,9 @@
-
 from MemoryConfig import MemoryConfig
 from MemorySimulator import MemorySimulator
 from Colors import Colors
 
 def main():
-    print(f"{Colors.BOLD_BLUE}=== Simulador de um Sistema de Gerência de Memória Paginada do SO ==={Colors.RESET}")
+    print(f"{Colors.BOLD_BLUE}=== Simulador de Sistema de Gerência de Memória Paginada do SO ==={Colors.RESET}")
 
     config = MemoryConfig(
         numeroEntradaTLB=2,

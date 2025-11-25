@@ -1,8 +1,3 @@
-"""
-Tabela de páginas com suporte a 1, 2 ou 3 níveis.
-Implementação simples, seguindo exatamente o que o trabalho pede.
-"""
-
 class PageTableEntry:
     def __init__(self, config):
         self.config = config
